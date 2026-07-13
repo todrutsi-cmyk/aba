@@ -192,8 +192,8 @@
 </div>
 
 <script>
-// ⚠️ 여기에 아까 구글 앱스 스크립트 배포 시 복사한 웹 앱 URL을 붙여넣으세요.
-const API_URL = "https://script.google.com/macros/s/AKfycbyvFSfRBcF7_DXoJQn5lSt2XeUI_1LcOPmkJODqdPVgMV4VJ1zDrRYyYXaZFDBgInVEMw/exec
+// 따옴표 오류 및 줄바꿈 수정을 완료했습니다.
+const API_URL = "https://script.google.com/macros/s/AKfycbyvFSfRBcF7_DXoJQn5lSt2XeUI_1LcOPmkJODqdPVgMV4VJ1zDrRYyYXaZFDBgInVEMw/exec";
 
 const DEFAULT_SKILLS = [
   {id:'sk_line', name:'직선 모방', domain:'동작모방'},
@@ -213,7 +213,7 @@ const SKILL_CATALOG = {
 };
 
 let skills = [];
-let globalEntries = {}; // 구글 시트에서 전체 캐시해올 통합 데이터 공간
+let globalEntries = {}; 
 let todayDate = new Date();
 let histDate = new Date();
 let currentEntry = {};
@@ -229,7 +229,6 @@ function fmtDateLabel(d){
   return `${d.getMonth()+1}월 ${d.getDate()}일 (${wd})`;
 }
 
-// 로컬 스킬 목록 로드
 function loadSkillsLocal(){
   const saved = localStorage.getItem('aba_skills');
   skills = saved ? JSON.parse(saved) : DEFAULT_SKILLS;
@@ -238,7 +237,6 @@ function saveSkillsLocal(){
   localStorage.setItem('aba_skills', JSON.stringify(skills));
 }
 
-// 구글 스프레드시트 전체 데이터 원격 연동
 async function fetchAllData() {
   try {
     const res = await fetch(API_URL);
@@ -295,7 +293,6 @@ function renderSkillCards(){
     container.appendChild(card);
   });
 
-  // 이벤트 바인딩 로직
   container.querySelectorAll('.mission-input').forEach(inp=>{
     inp.addEventListener('input', ()=>{
       const id = inp.dataset.mission;
@@ -394,6 +391,20 @@ async function refreshTodayView(){
 document.getElementById('prevDay').addEventListener('click', async ()=>{ todayDate.setDate(todayDate.getDate()-1); await refreshTodayView(); });
 document.getElementById('nextDay').addEventListener('click', async ()=>{ todayDate.setDate(todayDate.getDate()+1); await refreshTodayView(); });
 
+// 스킬 추가 탭 토글 구현 추가
+document.getElementById('addTabCatalog').addEventListener('click', ()=>{
+  document.getElementById('addTabCatalog').classList.add('active');
+  document.getElementById('addTabCustom').classList.remove('active');
+  document.getElementById('addPaneCatalog').classList.add('active');
+  document.getElementById('addPaneCustom').classList.remove('active');
+});
+document.getElementById('addTabCustom').addEventListener('click', ()=>{
+  document.getElementById('addTabCustom').classList.add('active');
+  document.getElementById('addTabCatalog').classList.remove('active');
+  document.getElementById('addPaneCustom').classList.add('active');
+  document.getElementById('addPaneCatalog').classList.remove('active');
+});
+
 document.getElementById('addSkillBtn').addEventListener('click', ()=>{
   const input = document.getElementById('newSkillInput');
   const name = input.value.trim();
@@ -405,7 +416,6 @@ document.getElementById('addSkillBtn').addEventListener('click', ()=>{
   renderCatalog();
 });
 
-// 구글 스프레드시트로 실시간 데이터 업로드 전송
 document.getElementById('saveBtn').addEventListener('click', async ()=>{
   const dateStr = fmtDate(todayDate);
   const toast = document.getElementById('saveToast');
@@ -415,7 +425,7 @@ document.getElementById('saveBtn').addEventListener('click', async ()=>{
   try {
     const res = await fetch(API_URL, {
       method: "POST",
-      mode: "no-cors", // Apps Script 제한 극복용 브라우저 우회 모드
+      mode: "no-cors", 
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         date: dateStr,
@@ -425,7 +435,6 @@ document.getElementById('saveBtn').addEventListener('click', async ()=>{
     });
     
     toast.textContent = "구글 시트에 저장 완료!";
-    // 로컬 캐시 임시 갱신
     globalEntries[dateStr] = JSON.parse(JSON.stringify(currentEntry));
     setTimeout(()=>toast.classList.remove('show'), 2000);
   } catch(e) {
@@ -434,7 +443,6 @@ document.getElementById('saveBtn').addEventListener('click', async ()=>{
   }
 });
 
-// 탭 전환 시스템
 document.getElementById('tabToday').addEventListener('click', ()=>{
   document.getElementById('tabToday').classList.add('active');
   document.getElementById('tabHistory').classList.remove('active');
@@ -485,7 +493,6 @@ function refreshTrend(){
   const trendArea = document.getElementById('trendArea');
   const skillStats = {};
   
-  // 최근 14일 일자 배열 생성
   const dates = [];
   for(let i=0; i<14; i++) {
     const d = new Date();
@@ -529,7 +536,6 @@ function refreshHistoryView(){
   refreshHistDateCard();
 }
 
-// 초기화 실행
 (async function init(){
   loadSkillsLocal();
   await fetchAllData();
