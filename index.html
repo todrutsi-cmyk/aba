@@ -1,95 +1,546 @@
-function doGet(e) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  const rows = sheet.getDataRange().getValues();
-  
-  // 시트가 비어있으면 헤더 작성
-  if (rows.length === 1 && rows[0][0] === "") {
-    sheet.appendRow(["Date", "SkillID", "SkillName", "Domain", "Mission", "Level", "Result", "Reinforcer", "Note", "Timestamp"]);
-    return ContentService.createTextOutput(JSON.stringify({ status: "success", data: {} }))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeaders({ 'Access-Control-Allow-Origin': '*' });
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>성장 기록</title>
+<link rel="stylesheet" as="style" crossorigin
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root{
+    --bg: #EFF3EE;
+    --surface: #FFFFFF;
+    --surface-soft: #F5F8F4;
+    --ink: #1F2E28;
+    --ink-soft: #5B6B62;
+    --accent: #3F6B5C;
+    --accent-deep: #2B4C40;
+    --accent-warm: #D98C4A;
+    --line: #DCE4DD;
+    --success: #3F6B5C;
+    --partial: #D98C4A;
+    --fail: #C0604E;
+    --radius: 14px;
   }
-  
-  const data = {};
-  for (let i = 1; i < rows.length; i++) {
-    const row = rows[i];
-    if (!row[0]) continue;
-    
-    let dateStr = row[0];
-    if (dateStr instanceof Date) {
-      dateStr = Utilities.formatDate(dateStr, Session.getScriptTimeZone(), "yyyy-MM-dd");
-    } else {
-      dateStr = String(dateStr).trim();
-    }
-    
-    const skillId = String(row[1]);
-    if (!data[dateStr]) data[dateStr] = {};
-    
-    data[dateStr][skillId] = {
-      name: row[2], domain: row[3], mission: row[4],
-      level: row[5] ? Number(row[5]) : null, result: row[6], reinforcer: row[7], note: row[8]
-    };
+  *{ box-sizing: border-box; }
+  body{
+    margin:0;
+    font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
   }
-  
-  return ContentService.createTextOutput(JSON.stringify({ status: "success", data: data }))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeaders({ 'Access-Control-Allow-Origin': '*' });
+  .app{ max-width: 640px; margin: 0 auto; padding: 20px 16px 80px; }
+  header.top{ padding: 22px 4px 18px; }
+  header.top .eyebrow{ font-size: 12.5px; color: var(--ink-soft); letter-spacing: 0.02em; margin-bottom: 6px; }
+  header.top h1{ font-size: 24px; margin: 0 0 4px; font-weight: 700; letter-spacing: -0.01em; }
+  header.top .date{ font-size: 13.5px; color: var(--ink-soft); }
+
+  .tabs{ display:flex; gap: 6px; background: var(--surface-soft); padding: 4px; border-radius: 12px; margin-bottom: 18px; }
+  .tabs button{ flex:1; padding: 10px 0; border:none; background: transparent; border-radius: 9px; font-size: 14px; font-weight: 600; color: var(--ink-soft); cursor:pointer; font-family: inherit; transition: background .15s, color .15s; }
+  .tabs button.active{ background: var(--surface); color: var(--accent-deep); box-shadow: 0 1px 3px rgba(31,46,40,0.08); }
+
+  .view{ display:none; }
+  .view.active{ display:block; }
+
+  .card{ background: var(--surface); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; border: 1px solid var(--line); }
+
+  .skill-card .skill-head{ display:flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap:8px; }
+  .skill-card .skill-name{ font-size: 15.5px; font-weight: 700; }
+  .skill-card .skill-domain{ font-size: 11px; color: var(--accent); font-weight:600; margin-top:2px; }
+  .skill-card .skill-remove{ background:none; border:none; color: var(--ink-soft); font-size: 12px; cursor:pointer; padding: 4px 6px; white-space:nowrap; }
+
+  .row-label{ font-size: 12px; color: var(--ink-soft); margin: 10px 0 6px; font-weight: 600; }
+
+  input.mission-input{
+    width:100%; border: 1px solid var(--line); border-radius: 9px; padding: 9px 10px;
+    font-family: inherit; font-size: 13.5px; background: var(--surface-soft); color: var(--ink);
+  }
+
+  .level-row{ display:flex; gap:6px; }
+  .level-btn{ flex:1; padding: 9px 2px; border-radius: 9px; border: 1px solid var(--line); background: var(--surface-soft); font-size: 11.5px; font-weight: 600; color: var(--ink-soft); cursor:pointer; font-family: inherit; }
+  .level-btn.selected{ background: var(--accent); color: white; border-color: var(--accent); }
+
+  .result-row{ display:flex; gap:6px; }
+  .result-btn{ flex:1; padding: 9px 0; border-radius: 9px; border: 1px solid var(--line); background: var(--surface-soft); font-size: 13px; font-weight: 600; color: var(--ink-soft); cursor:pointer; font-family: inherit; }
+  .result-btn.selected[data-r="success"]{ background: var(--success); color:white; border-color: var(--success); }
+  .result-btn.selected[data-r="partial"]{ background: var(--partial); color:white; border-color: var(--partial); }
+  .result-btn.selected[data-r="fail"]{ background: var(--fail); color:white; border-color: var(--fail); }
+
+  .chip-row{ display:flex; gap:6px; flex-wrap:wrap; }
+  .chip{ padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface-soft); font-size: 12.5px; color: var(--ink-soft); cursor:pointer; font-family: inherit; }
+  .chip.selected{ background: var(--accent-warm); color:white; border-color: var(--accent-warm); }
+
+  textarea.note{ width:100%; border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; font-family: inherit; font-size: 13.5px; resize: vertical; min-height: 36px; background: var(--surface-soft); color: var(--ink); }
+
+  .add-section{ margin-top: 6px; }
+  .add-tabs{ display:flex; gap:6px; margin-bottom:10px; }
+  .add-tab-btn{ flex:1; padding: 8px 0; border-radius: 8px; border:1px solid var(--line); background: var(--surface-soft); font-size:12.5px; font-weight:600; color:var(--ink-soft); cursor:pointer; font-family:inherit; }
+  .add-tab-btn.active{ background: var(--accent); color:white; border-color:var(--accent); }
+  .add-pane{ display:none; }
+  .add-pane.active{ display:block; }
+
+  .catalog-domain{ margin-bottom: 14px; }
+  .catalog-domain .domain-title{ font-size: 12.5px; font-weight: 700; color: var(--accent-deep); margin-bottom: 6px; }
+  .catalog-item{ display:flex; justify-content:space-between; align-items:center; padding: 8px 2px; border-bottom: 1px solid var(--line); gap:8px; }
+  .catalog-item:last-child{ border-bottom:none; }
+  .catalog-item .ci-name{ font-size: 13px; color: var(--ink); }
+  .catalog-item button{ font-size: 12px; padding: 5px 10px; border-radius: 7px; border:1px solid var(--accent); background:white; color:var(--accent); font-weight:600; cursor:pointer; font-family:inherit; white-space:nowrap; }
+  .catalog-item button.added{ background: var(--accent); color:white; }
+
+  .add-skill{ display:flex; gap:8px; margin-top: 6px; }
+  .add-skill input{ flex:1; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--line); font-family: inherit; font-size: 14px; }
+  .add-skill button{ padding: 0 16px; border-radius: 10px; border: none; background: var(--accent); color:white; font-weight:700; font-size: 14px; cursor:pointer; font-family: inherit; }
+
+  .save-bar{ position: sticky; bottom: 12px; margin-top: 16px; }
+  .save-btn{ width:100%; padding: 14px 0; border-radius: 12px; border:none; background: var(--accent-deep); color:white; font-size: 15px; font-weight: 700; cursor:pointer; font-family: inherit; box-shadow: 0 4px 14px rgba(43,76,64,0.25); }
+  .save-btn:active{ transform: scale(0.99); }
+  .save-toast{ text-align:center; font-size: 12.5px; color: var(--accent-deep); margin-top: 8px; opacity:0; transition: opacity .2s; }
+  .save-toast.show{ opacity:1; }
+
+  .date-nav{ display:flex; align-items:center; justify-content: space-between; margin-bottom: 14px; }
+  .date-nav button{ background: var(--surface); border: 1px solid var(--line); border-radius: 9px; width: 34px; height: 34px; font-size: 15px; cursor:pointer; color: var(--ink); }
+  .date-nav .cur-date{ font-size: 14.5px; font-weight: 700; }
+
+  .history-empty{ text-align:center; color: var(--ink-soft); font-size: 13.5px; padding: 30px 10px; }
+
+  .hist-entry{ padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .hist-entry:last-child{ border-bottom:none; }
+  .hist-entry .top-row{ display:flex; justify-content: space-between; align-items:center; }
+  .hist-entry .name{ font-size: 14px; font-weight: 600; }
+  .hist-entry .mission{ font-size: 12.5px; color: var(--accent-deep); margin-top:3px; }
+  .hist-entry .meta{ font-size: 12px; color: var(--ink-soft); margin-top:2px;}
+  .badge{ font-size: 11.5px; font-weight: 700; padding: 4px 9px; border-radius: 999px; color: white; }
+  .badge.success{ background: var(--success); }
+  .badge.partial{ background: var(--partial); }
+  .badge.fail{ background: var(--fail); }
+
+  .section-title{ font-size: 13px; font-weight: 700; color: var(--ink-soft); margin: 22px 4px 10px; letter-spacing: 0.02em; }
+
+  .trend-row{ margin-bottom: 14px; }
+  .trend-row .trend-head{ display:flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+  .trend-row .trend-head .pct{ font-weight: 700; color: var(--accent-deep); }
+  .trend-bar-bg{ height: 8px; border-radius: 999px; background: var(--surface-soft); overflow:hidden; }
+  .trend-bar-fill{ height:100%; background: var(--accent); border-radius: 999px; transition: width .3s; }
+  .trend-sub{ font-size: 11px; color: var(--ink-soft); margin-top: 4px; }
+
+  .loading{ text-align:center; color: var(--ink-soft); padding: 40px 0; font-size: 13.5px; }
+  .source-note{ font-size: 11px; color: var(--ink-soft); text-align:center; margin-top: 18px; line-height:1.6; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="eyebrow">홈 ABA 기록</div>
+    <h1>성장 기록</h1>
+    <div class="date" id="headerDate">-</div>
+  </header>
+
+  <div class="tabs">
+    <button id="tabToday" class="active">오늘 기록</button>
+    <button id="tabHistory">히스토리</button>
+  </div>
+
+  <div id="viewToday" class="view active">
+    <div id="dateNavToday" class="date-nav">
+      <button id="prevDay">‹</button>
+      <div class="cur-date" id="curDateLabel">-</div>
+      <button id="nextDay">›</button>
+    </div>
+
+    <div id="skillCards"></div>
+
+    <div class="card add-section">
+      <div class="row-label" style="margin-top:0;">스킬 추가</div>
+      <div class="add-tabs">
+        <button class="add-tab-btn active" id="addTabCatalog">추천 목록 (근거기반)</button>
+        <button class="add-tab-btn" id="addTabCustom">직접 입력</button>
+      </div>
+      <div class="add-pane active" id="addPaneCatalog">
+        <div id="catalogArea"></div>
+      </div>
+      <div class="add-pane" id="addPaneCustom">
+        <div class="add-skill">
+          <input type="text" id="newSkillInput" placeholder="예: 동그라미 그리기">
+          <button id="addSkillBtn">추가</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="save-bar">
+      <button class="save-btn" id="saveBtn">오늘 기록 저장</button>
+      <div class="save-toast" id="saveToast">저장됐어요</div>
+    </div>
+
+    <div class="source-note">추천 목록은 VB-MAPP·ABLLS-R 등 ABA 표준 영역에서 유아기 초기 발달 항목을 홈 스쿨링용으로 재구성한 목록입니다.</div>
+  </div>
+
+  <div id="viewHistory" class="view">
+    <div class="section-title">최근 14일 성공률</div>
+    <div id="trendArea"><div class="loading">불러오는 중...</div></div>
+
+    <div class="section-title">날짜별 기록</div>
+    <div id="dateNavHist" class="date-nav">
+      <button id="histPrevDay">‹</button>
+      <div class="cur-date" id="histDateLabel">-</div>
+      <button id="histNextDay">›</button>
+    </div>
+    <div class="card" id="histCard">
+      <div class="loading">불러오는 중...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ⚠️ 여기에 아까 구글에서 새로 발급받은 배포 주소를 통째로 붙여넣으세요!
+const API_URL = "여기에_구글_웹앱_URL_주소_입력";
+
+const DEFAULT_SKILLS = [
+  {id:'sk_line', name:'직선 모방', domain:'동작모방'},
+  {id:'sk_dots', name:'점 잇기', domain:'동작모방'},
+  {id:'sk_request', name:'요구하기', domain:'Mand'},
+  {id:'sk_sibling', name:'형과 상호작용', domain:'사회성'},
+  {id:'sk_follow', name:'지시 따르기', domain:'수용언어'}
+];
+const REINFORCER_CHIPS = ['간식','칭찬','스킨십','좋아하는 놀이','노래'];
+const LEVEL_LABELS = {1:'1 독립', 2:'2 힌트', 3:'3 모델링', 4:'4 손잡기'};
+
+const SKILL_CATALOG = {
+  'Mand (요구하기)': ['원하는 것을 손 뻗어 요구하기', '좋아하는 사물을 소리/단어/제스처로 요구하기', '"도와줘" 요청하기', '싫어요/그만 표현하기'],
+  'Tact (이름대기)': ['눈앞의 사물 이름 말하기', '동작 보고 말로 설명하기', '그림책 속 사물 명명하기'],
+  '수용언어 (Listener)': ['이름 부르면 쳐다보기', '1단계 지시 따르기', '사물 이름 듣고 가져오기'],
+  '동작모방 (Motor Imitation)': ['대근육 동작 모방', '소근육 동작 모방', '사물 이용한 동작 모방']
+};
+
+let skills = [];
+let globalEntries = {}; 
+let todayDate = new Date();
+let histDate = new Date();
+let currentEntry = {};
+
+function fmtDate(d){
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function fmtDateLabel(d){
+  const wd = ['일','월','화','수','목','금','토'][d.getDay()];
+  return `${d.getMonth()+1}월 ${d.getDate()}일 (${wd})`;
 }
 
-function doPost(e) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  
-  if (!e || !e.postData || !e.postData.contents) {
-    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "No data" }))
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeaders({ 'Access-Control-Allow-Origin': '*' });
-  }
-  
-  const postData = JSON.parse(e.postData.contents);
-  const dateStr = String(postData.date).trim();
-  const entries = postData.entries || {};
-  const skillsList = postData.skills || [];
-  
-  const rows = sheet.getDataRange().getValues();
-  // 덮어쓰기: 같은 날짜 데이터 삭제
-  for (let i = rows.length - 1; i >= 1; i--) {
-    let checkDate = rows[i][0];
-    if (checkDate instanceof Date) {
-      checkDate = Utilities.formatDate(checkDate, Session.getScriptTimeZone(), "yyyy-MM-dd");
-    } else {
-      checkDate = String(checkDate).trim();
+function loadSkillsLocal(){
+  const saved = localStorage.getItem('aba_skills');
+  skills = saved ? JSON.parse(saved) : DEFAULT_SKILLS;
+}
+function saveSkillsLocal(){
+  localStorage.setItem('aba_skills', JSON.stringify(skills));
+}
+
+async function fetchAllData() {
+  if (API_URL.includes("여기에_구글")) return;
+  try {
+    const res = await fetch(API_URL);
+    const json = await res.json();
+    if(json.status === "success") {
+      globalEntries = json.data;
     }
-    if (checkDate === dateStr) {
-      sheet.deleteRow(i + 1);
-    }
+  } catch(e) {
+    console.error("원격 데이터 수신 실패:", e);
   }
+}
+
+function escapeHtml(str){
+  if(!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function renderSkillCards(){
+  const container = document.getElementById('skillCards');
+  container.innerHTML = '';
+  skills.forEach(skill=>{
+    const entry = currentEntry[skill.id] || {level:null, result:null, reinforcer:null, note:'', mission:''};
+    const card = document.createElement('div');
+    card.className = 'card skill-card';
+    card.innerHTML = `
+      <div class="skill-head">
+        <div>
+          <div class="skill-name">${escapeHtml(skill.name)}</div>
+          ${skill.domain ? `<div class="skill-domain">${escapeHtml(skill.domain)}</div>` : ''}
+        </div>
+        <button class="skill-remove" data-remove="${skill.id}">삭제</button>
+      </div>
+      <div class="row-label">오늘의 미션</div>
+      <input type="text" class="mission-input" data-mission="${skill.id}" placeholder="예: 미션 입력" value="${escapeHtml(entry.mission||'')}">
+      <div class="row-label">도움 단계</div>
+      <div class="level-row" data-level-group="${skill.id}">
+        ${[1,2,3,4].map(l=>`<button type="button" class="level-btn ${entry.level===l?'selected':''}" data-level="${l}">${LEVEL_LABELS[l]}</button>`).join('')}
+      </div>
+      <div class="row-label">결과</div>
+      <div class="result-row" data-result-group="${skill.id}">
+        <button type="button" class="result-btn ${entry.result==='success'?'selected':''}" data-r="success">성공</button>
+        <button type="button" class="result-btn ${entry.result==='partial'?'selected':''}" data-r="partial">부분</button>
+        <button type="button" class="result-btn ${entry.result==='fail'?'selected':''}" data-r="fail">실패</button>
+      </div>
+      <div class="row-label">강화물</div>
+      <div class="chip-row" data-chip-group="${skill.id}">
+        ${REINFORCER_CHIPS.map(c=>`<button type="button" class="chip ${entry.reinforcer===c?'selected':''}" data-chip="${c}">${c}</button>`).join('')}
+      </div>
+      <div class="row-label">메모</div>
+      <textarea class="note" data-note="${skill.id}" placeholder="특이사항">${escapeHtml(entry.note||'')}</textarea>
+    `;
+    container.appendChild(card);
+  });
+
+  container.querySelectorAll('.mission-input').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      const id = inp.dataset.mission;
+      if(!currentEntry[id]) currentEntry[id] = {};
+      currentEntry[id].mission = inp.value;
+    });
+  });
+  container.querySelectorAll('.level-row').forEach(row=>{
+    const id = row.dataset.levelGroup;
+    row.querySelectorAll('.level-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const lvl = parseInt(btn.dataset.level);
+        if(!currentEntry[id]) currentEntry[id] = {};
+        currentEntry[id].level = currentEntry[id].level === lvl ? null : lvl;
+        row.querySelectorAll('.level-btn').forEach(b=>b.classList.toggle('selected', parseInt(b.dataset.level)===currentEntry[id].level));
+      });
+    });
+  });
+  container.querySelectorAll('.result-row').forEach(row=>{
+    const id = row.dataset.resultGroup;
+    row.querySelectorAll('.result-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const r = btn.dataset.r;
+        if(!currentEntry[id]) currentEntry[id] = {};
+        currentEntry[id].result = currentEntry[id].result === r ? null : r;
+        row.querySelectorAll('.result-btn').forEach(b=>b.classList.toggle('selected', b.dataset.r===currentEntry[id].result));
+      });
+    });
+  });
+  container.querySelectorAll('.chip-row').forEach(row=>{
+    const id = row.dataset.chipGroup;
+    row.querySelectorAll('.chip').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const c = btn.dataset.chip;
+        if(!currentEntry[id]) currentEntry[id] = {};
+        currentEntry[id].reinforcer = currentEntry[id].reinforcer === c ? null : c;
+        row.querySelectorAll('.chip').forEach(b=>b.classList.toggle('selected', b.dataset.chip===currentEntry[id].reinforcer));
+      });
+    });
+  });
+  container.querySelectorAll('textarea.note').forEach(ta=>{
+    ta.addEventListener('input', ()=>{
+      const id = ta.dataset.note;
+      if(!currentEntry[id]) currentEntry[id] = {};
+      currentEntry[id].note = ta.value;
+    });
+  });
+  container.querySelectorAll('[data-remove]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      skills = skills.filter(s=>s.id!==btn.dataset.remove);
+      saveSkillsLocal();
+      renderSkillCards();
+      renderCatalog();
+    });
+  });
+}
+
+function renderCatalog(){
+  const area = document.getElementById('catalogArea');
+  area.innerHTML = '';
+  Object.keys(SKILL_CATALOG).forEach(domain=>{
+    const block = document.createElement('div');
+    block.className = 'catalog-domain';
+    block.innerHTML = `<div class="domain-title">${escapeHtml(domain)}</div>` +
+      SKILL_CATALOG[domain].map(item=>{
+        const added = skills.some(s=>s.name===item);
+        return `<div class="catalog-item">
+          <div class="ci-name">${escapeHtml(item)}</div>
+          <button data-cat-add="${escapeHtml(item)}" data-cat-domain="${escapeHtml(domain)}" class="${added?'added':''}" ${added?'disabled':''}>${added?'추가됨':'추가'}</button>
+        </div>`;
+      }).join('');
+    area.appendChild(block);
+  });
+  area.querySelectorAll('[data-cat-add]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const name = btn.dataset.catAdd;
+      if(skills.some(s=>s.name===name)) return;
+      skills.push({id: 'sk_'+Date.now(), name, domain: btn.dataset.catDomain});
+      saveSkillsLocal();
+      renderSkillCards();
+      renderCatalog();
+    });
+  });
+}
+
+async function refreshTodayView(){
+  const dateStr = fmtDate(todayDate);
+  document.getElementById('curDateLabel').textContent = fmtDateLabel(todayDate);
+  document.getElementById('headerDate').textContent = fmtDateLabel(new Date()) + ' 기준';
   
-  const timestamp = new Date();
-  Object.keys(entries).forEach(skillId => {
-    const entry = entries[skillId];
-    if (!entry) return;
-    const skillObj = skillsList.find(s => s.id === skillId) || {};
+  currentEntry = globalEntries[dateStr] || {};
+  renderSkillCards();
+  renderCatalog();
+}
+
+document.getElementById('prevDay').addEventListener('click', async ()=>{ todayDate.setDate(todayDate.getDate()-1); await refreshTodayView(); });
+document.getElementById('nextDay').addEventListener('click', async ()=>{ todayDate.setDate(todayDate.getDate()+1); await refreshTodayView(); });
+
+document.getElementById('addTabCatalog').addEventListener('click', ()=>{
+  document.getElementById('addTabCatalog').classList.add('active');
+  document.getElementById('addTabCustom').classList.remove('active');
+  document.getElementById('addPaneCatalog').classList.add('active');
+  document.getElementById('addPaneCustom').classList.remove('active');
+});
+document.getElementById('addTabCustom').addEventListener('click', ()=>{
+  document.getElementById('addTabCustom').classList.add('active');
+  document.getElementById('addTabCatalog').classList.remove('active');
+  document.getElementById('addPaneCustom').classList.add('active');
+  document.getElementById('addPaneCatalog').classList.remove('active');
+});
+
+document.getElementById('addSkillBtn').addEventListener('click', ()=>{
+  const input = document.getElementById('newSkillInput');
+  const name = input.value.trim();
+  if(!name) return;
+  skills.push({id: 'sk_'+Date.now(), name, domain: '직접입력'});
+  saveSkillsLocal();
+  input.value = '';
+  renderSkillCards();
+  renderCatalog();
+});
+
+document.getElementById('saveBtn').addEventListener('click', async ()=>{
+  const dateStr = fmtDate(todayDate);
+  const toast = document.getElementById('saveToast');
+  toast.textContent = "구글 시트에 동기화 중...";
+  toast.classList.add('show');
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({
+        date: dateStr,
+        entries: currentEntry,
+        skills: skills
+      })
+    });
     
-    if (entry.result || entry.level || entry.mission || entry.note || entry.reinforcer) {
-      sheet.appendRow([
-        dateStr, skillId, skillObj.name || entry.name || skillId, skillObj.domain || entry.domain || '',
-        entry.mission || '', entry.level || '', entry.result || '', entry.reinforcer || '', entry.note || '', timestamp
-      ]);
-    }
+    toast.textContent = "구글 시트에 저장 완료!";
+    globalEntries[dateStr] = JSON.parse(JSON.stringify(currentEntry));
+    setTimeout(()=>toast.classList.remove('show'), 2000);
+  } catch(e) {
+    console.error(e);
+    toast.textContent = "저장 실패. 네트워크를 확인하세요.";
+    setTimeout(()=>toast.classList.remove('show'), 3000);
+  }
+});
+
+document.getElementById('tabToday').addEventListener('click', ()=>{
+  document.getElementById('tabToday').classList.add('active');
+  document.getElementById('tabHistory').classList.remove('active');
+  document.getElementById('viewToday').classList.add('active');
+  document.getElementById('viewHistory').classList.remove('active');
+});
+document.getElementById('tabHistory').addEventListener('click', async ()=>{
+  document.getElementById('tabHistory').classList.add('active');
+  document.getElementById('tabToday').classList.remove('active');
+  document.getElementById('viewHistory').classList.add('active');
+  document.getElementById('viewToday').classList.remove('active');
+  
+  const trendArea = document.getElementById('trendArea');
+  trendArea.innerHTML = `<div class="loading">구글 데이터 불러오는 중...</div>`;
+  await fetchAllData(); 
+  refreshHistoryView();
+});
+
+document.getElementById('histPrevDay').addEventListener('click', ()=>{ histDate.setDate(histDate.getDate()-1); refreshHistDateCard(); });
+document.getElementById('histNextDay').addEventListener('click', ()=>{ histDate.setDate(histDate.getDate()+1); refreshHistDateCard(); });
+
+function refreshHistDateCard(){
+  document.getElementById('histDateLabel').textContent = fmtDateLabel(histDate);
+  const dateStr = fmtDate(histDate);
+  const entry = globalEntries[dateStr] || {};
+  const card = document.getElementById('histCard');
+  const entries = Object.keys(entry);
+  
+  if(entries.length === 0){
+    card.innerHTML = `<div class="history-empty">이 날짜엔 기록이 없어요</div>`;
+    return;
+  }
+  
+  card.innerHTML = entries.map(id => {
+    const e = entry[id];
+    const skill = skills.find(s=>s.id===id);
+    const name = skill ? skill.name : id;
+    const badge = e.result ? `<span class="badge ${e.result}">${e.result==='success'?'성공':e.result==='partial'?'부분':'실패'}</span>` : '';
+    return `<div class="hist-entry">
+      <div class="top-row"><div class="name">${escapeHtml(name)}</div>${badge}</div>
+      ${e.mission ? `<div class="mission">미션: ${escapeHtml(e.mission)}</div>` : ''}
+      <div class="meta">도움: ${e.level || '-'} · 강화물: ${e.reinforcer || '-'} · 메모: ${e.note || '-'}</div>
+    </div>`;
+  }).join('');
+}
+
+function refreshTrend(){
+  const trendArea = document.getElementById('trendArea');
+  const skillStats = {};
+  
+  const dates = [];
+  for(let i=0; i<14; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    dates.push(fmtDate(d));
+  }
+  
+  dates.forEach(dStr => {
+    const entry = globalEntries[dStr] || {};
+    Object.keys(entry).forEach(id => {
+      const e = entry[id];
+      if(!e || !e.result) return;
+      if(!skillStats[id]) skillStats[id] = {sum:0, count:0};
+      const val = e.result === 'success' ? 1 : e.result === 'partial' ? 0.5 : 0;
+      skillStats[id].sum += val;
+      skillStats[id].count++;
+    });
   });
   
-  return ContentService.createTextOutput(JSON.stringify({ status: "success" }))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeaders({ 'Access-Control-Allow-Origin': '*' });
+  const statIds = Object.keys(skillStats);
+  if(statIds.length === 0){
+    trendArea.innerHTML = `<div class="history-empty">최근 14일 통계 데이터가 없습니다.</div>`;
+    return;
+  }
+  
+  trendArea.innerHTML = statIds.map(id => {
+    const skill = skills.find(s=>s.id===id);
+    const name = skill ? skill.name : id;
+    const stat = skillStats[id];
+    const pct = Math.round((stat.sum / stat.count) * 100);
+    return `<div class="trend-row">
+      <div class="trend-head"><span>${escapeHtml(name)}</span><span class="pct">${pct}%</span></div>
+      <div class="trend-bar-bg"><div class="trend-bar-fill" style="width:${pct}%"></div></div>
+      <div class="trend-sub">${stat.count}회 기록됨</div>
+    </div>`;
+  }).join('');
 }
 
-function doOptions(e) {
-  return ContentService.createTextOutput("")
-    .setMimeType(ContentService.MimeType.TEXT)
-    .setHeaders({
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-      'Access-Control-Max-Age': '86400'
-    });
+function refreshHistoryView(){
+  refreshTrend();
+  refreshHistDateCard();
 }
+
+(async function init(){
+  loadSkillsLocal();
+  await fetchAllData();
+  await refreshTodayView();
+})();
+</script>
+</body>
+</html>
