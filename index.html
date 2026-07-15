@@ -708,13 +708,14 @@ function refreshHistDateCard(){
     const e = entry[id];
     const skill = skills.find(s=>s.id===id);
     const name = skill ? skill.name : id;
-    const sessRows = (e.sessions||[]).map(s=>`
+    const sessRows = (e.sessions||[]).map((s, idx)=>`
       <div class="sess-row">
         <span class="sess-time">${escapeHtml(s.time||'')}</span>
         <span class="sess-level">${s.level?('Lv'+s.level):'-'}</span>
         <span class="sess-badge ${s.result}">${RESULT_LABEL[s.result]||'-'}</span>
         ${s.reinforcer ? `<span class="sess-level">${escapeHtml(s.reinforcer)}</span>` : ''}
         ${s.note ? `<span class="sess-note">${escapeHtml(s.note)}</span>` : ''}
+        <button class="sess-del" data-histdelsession="${id}|${idx}">×</button>
       </div>
     `).join('') || `<div class="sess-empty">기록된 세션 없음</div>`;
     return `<div class="hist-skill-block">
@@ -723,6 +724,22 @@ function refreshHistDateCard(){
       ${sessRows}
     </div>`;
   }).join('');
+
+  card.querySelectorAll('[data-histdelsession]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(!confirm('이 세션 기록을 삭제할까요?')) return;
+      const [skillId, idxStr] = btn.dataset.histdelsession.split('|');
+      const idx = parseInt(idxStr);
+      const targetEntry = allData[dateStr][skillId];
+      if(targetEntry && targetEntry.sessions){
+        targetEntry.sessions.splice(idx,1);
+        saveAllData();
+        refreshHistDateCard();
+        refreshTrend();
+        refreshLevelTrend();
+      }
+    });
+  });
 }
 
 function last14Dates(){
