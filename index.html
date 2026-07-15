@@ -37,7 +37,7 @@
   header.top .date{ font-size: 13.5px; color: var(--ink-soft); }
 
   .tabs{ display:flex; gap: 6px; background: var(--surface-soft); padding: 4px; border-radius: 12px; margin-bottom: 18px; }
-  .tabs button{ flex:1; padding: 10px 0; border:none; background: transparent; border-radius: 9px; font-size: 14px; font-weight: 600; color: var(--ink-soft); cursor:pointer; font-family: inherit; transition: background .15s, color .15s; }
+  .tabs button{ flex:1; padding: 10px 0; border:none; background: transparent; border-radius: 9px; font-size: 13px; font-weight: 600; color: var(--ink-soft); cursor:pointer; font-family: inherit; transition: background .15s, color .15s; }
   .tabs button.active{ background: var(--surface); color: var(--accent-deep); box-shadow: 0 1px 3px rgba(31,46,40,0.08); }
 
   .view{ display:none; }
@@ -46,11 +46,15 @@
   .card{ background: var(--surface); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; border: 1px solid var(--line); }
 
   .skill-card .skill-head{ display:flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap:8px; }
-  .skill-card .skill-name{ font-size: 15.5px; font-weight: 700; }
+  .skill-card .skill-name-btn{ background:none; border:none; padding:0; text-align:left; cursor:pointer; font-family:inherit; }
+  .skill-card .skill-name{ font-size: 15.5px; font-weight: 700; color: var(--ink); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; }
   .skill-card .skill-domain{ font-size: 11px; color: var(--accent); font-weight:600; margin-top:2px; }
   .skill-card .skill-remove{ background:none; border:none; color: var(--ink-soft); font-size: 12px; cursor:pointer; padding: 4px 6px; white-space:nowrap; }
+  .mastery-badge{ display:inline-block; font-size:11px; font-weight:700; color:white; background: var(--accent-warm); padding:3px 9px; border-radius:999px; margin-top:6px; }
 
   .row-label{ font-size: 12px; color: var(--ink-soft); margin: 10px 0 6px; font-weight: 600; }
+  .row-label-flex{ display:flex; justify-content:space-between; align-items:center; }
+  .mini-btn{ background:none; border:1px solid var(--line); color:var(--accent-deep); font-size:11px; font-weight:600; padding:4px 8px; border-radius:7px; cursor:pointer; font-family:inherit; }
 
   input.mission-input{
     width:100%; border: 1px solid var(--line); border-radius: 9px; padding: 9px 10px;
@@ -72,6 +76,22 @@
   .chip.selected{ background: var(--accent-warm); color:white; border-color: var(--accent-warm); }
 
   textarea.note{ width:100%; border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; font-family: inherit; font-size: 13.5px; resize: vertical; min-height: 36px; background: var(--surface-soft); color: var(--ink); }
+
+  .add-session-btn{ width:100%; margin-top:12px; padding: 11px 0; border-radius: 10px; border:none; background: var(--accent); color:white; font-size: 13.5px; font-weight: 700; cursor:pointer; font-family: inherit; }
+
+  .sess-list{ margin-top: 12px; border-top: 1px dashed var(--line); padding-top: 10px; }
+  .sess-list-title{ font-size:11.5px; color:var(--ink-soft); font-weight:700; margin-bottom:6px; }
+  .sess-row{ display:flex; align-items:center; gap:7px; padding:6px 0; font-size:12.5px; flex-wrap:wrap; border-bottom:1px solid var(--line); }
+  .sess-row:last-child{ border-bottom:none; }
+  .sess-time{ color: var(--ink-soft); font-variant-numeric: tabular-nums; min-width: 40px; }
+  .sess-level{ background: var(--surface-soft); border-radius:6px; padding:2px 6px; font-weight:600; font-size:11.5px; }
+  .sess-note{ color: var(--ink-soft); flex:1; min-width: 60px; }
+  .sess-del{ margin-left:auto; background:none; border:none; color: var(--ink-soft); font-size:14px; cursor:pointer; padding:2px 6px; }
+  .sess-badge{ font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 999px; color: white; }
+  .sess-badge.success{ background: var(--success); }
+  .sess-badge.partial{ background: var(--partial); }
+  .sess-badge.fail{ background: var(--fail); }
+  .sess-empty{ font-size:12px; color:var(--ink-soft); }
 
   .add-section{ margin-top: 6px; }
   .add-tabs{ display:flex; gap:6px; margin-bottom:10px; }
@@ -104,12 +124,11 @@
 
   .history-empty{ text-align:center; color: var(--ink-soft); font-size: 13.5px; padding: 30px 10px; }
 
-  .hist-entry{ padding: 10px 0; border-bottom: 1px solid var(--line); }
-  .hist-entry:last-child{ border-bottom:none; }
-  .hist-entry .top-row{ display:flex; justify-content: space-between; align-items:center; }
-  .hist-entry .name{ font-size: 14px; font-weight: 600; }
-  .hist-entry .mission{ font-size: 12.5px; color: var(--accent-deep); margin-top:3px; }
-  .hist-entry .meta{ font-size: 12px; color: var(--ink-soft); margin-top:2px;}
+  .hist-skill-block{ padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .hist-skill-block:last-child{ border-bottom:none; }
+  .hist-skill-block .name{ font-size: 14px; font-weight: 700; }
+  .hist-skill-block .mission{ font-size: 12.5px; color: var(--accent-deep); margin-top:3px; }
+
   .badge{ font-size: 11.5px; font-weight: 700; padding: 4px 9px; border-radius: 999px; color: white; }
   .badge.success{ background: var(--success); }
   .badge.partial{ background: var(--partial); }
@@ -122,6 +141,7 @@
   .trend-row .trend-head .pct{ font-weight: 700; color: var(--accent-deep); }
   .trend-bar-bg{ height: 8px; border-radius: 999px; background: var(--surface-soft); overflow:hidden; }
   .trend-bar-fill{ height:100%; background: var(--accent); border-radius: 999px; transition: width .3s; }
+  .trend-bar-fill.level{ background: var(--accent-warm); }
   .trend-sub{ font-size: 11px; color: var(--ink-soft); margin-top: 4px; }
 
   .loading{ text-align:center; color: var(--ink-soft); padding: 40px 0; font-size: 13.5px; }
@@ -129,6 +149,38 @@
 
   .backup-row{ display:flex; gap:8px; margin-top: 10px; }
   .backup-row button{ flex:1; padding: 10px 0; border-radius: 9px; border: 1px solid var(--line); background: var(--surface-soft); font-size: 12.5px; font-weight:600; color: var(--ink-soft); cursor:pointer; font-family: inherit; }
+
+  .report-row{ display:flex; gap:8px; align-items:center; margin-top:8px; }
+  .report-row input[type=date]{ flex:1; border:1px solid var(--line); border-radius:8px; padding:8px; font-family:inherit; font-size:12.5px; background: var(--surface-soft); color: var(--ink); }
+  .report-row .tilde{ color: var(--ink-soft); font-size:12px; }
+  .report-btn{ margin-top:10px; width:100%; padding:10px 0; border-radius:9px; border:none; background: var(--accent-deep); color:white; font-weight:700; font-size:13px; cursor:pointer; font-family:inherit; }
+
+  .modal-overlay{ display:none; position:fixed; inset:0; background: rgba(31,46,40,0.45); z-index: 50; align-items:flex-end; justify-content:center; }
+  .modal-overlay.show{ display:flex; }
+  .modal-sheet{ background: var(--surface); width:100%; max-width:640px; border-radius: 16px 16px 0 0; padding: 18px 16px 26px; max-height: 78vh; overflow-y:auto; }
+  .modal-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; }
+  .modal-head h3{ font-size:16px; margin:0; }
+  .modal-close{ background:none; border:none; font-size: 20px; color: var(--ink-soft); cursor:pointer; padding:2px 6px; }
+  .modal-day{ margin-bottom: 12px; }
+  .modal-day .md-date{ font-size:12.5px; font-weight:700; color: var(--accent-deep); margin-bottom:4px; }
+  .modal-day .md-mission{ font-size:11.5px; color:var(--ink-soft); margin-bottom:4px; }
+
+  /* ABA 참고자료 탭 */
+  .ref-disclaimer{ background: var(--surface-soft); border:1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 12.5px; color: var(--ink-soft); line-height:1.6; margin-bottom: 16px; }
+  details.ref-section{ background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); margin-bottom: 10px; overflow:hidden; }
+  details.ref-section summary{ padding: 14px 16px; font-size: 14.5px; font-weight: 700; cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center; color: var(--accent-deep); }
+  details.ref-section summary::-webkit-details-marker{ display:none; }
+  details.ref-section summary:after{ content:'+'; font-size:18px; color: var(--ink-soft); }
+  details.ref-section[open] summary:after{ content:'−'; }
+  .ref-body{ padding: 0 16px 16px; font-size: 13.5px; line-height: 1.75; color: var(--ink); }
+  .ref-body h4{ font-size: 13px; margin: 14px 0 6px; color: var(--accent-deep); }
+  .ref-body p{ margin: 6px 0; }
+  .ref-body ul{ margin: 6px 0; padding-left: 18px; }
+  .ref-body li{ margin: 4px 0; }
+  .ref-body .lv-table{ width:100%; border-collapse: collapse; margin: 8px 0; font-size:12.5px; }
+  .ref-body .lv-table td, .ref-body .lv-table th{ border:1px solid var(--line); padding:6px 8px; text-align:left; }
+  .ref-source-list{ font-size: 11.5px; color: var(--ink-soft); line-height:1.9; }
+  .ref-source-list a{ color: var(--accent); }
 </style>
 </head>
 <body>
@@ -142,6 +194,7 @@
   <div class="tabs">
     <button id="tabToday" class="active">오늘 기록</button>
     <button id="tabHistory">히스토리</button>
+    <button id="tabRef">ABA 참고자료</button>
   </div>
 
   <div id="viewToday" class="view active">
@@ -149,6 +202,11 @@
       <button id="prevDay">‹</button>
       <div class="cur-date" id="curDateLabel">-</div>
       <button id="nextDay">›</button>
+    </div>
+
+    <div class="row-label-flex" style="margin: 0 2px 10px;">
+      <span style="font-size:12px; color:var(--ink-soft);">미션 입력이 비어있으면 전날 미션을 불러올 수 있어요</span>
+      <button class="mini-btn" id="copyYesterdayBtn">전날 미션 불러오기</button>
     </div>
 
     <div id="skillCards"></div>
@@ -171,7 +229,7 @@
     </div>
 
     <div class="save-bar">
-      <button class="save-btn" id="saveBtn">오늘 기록 저장</button>
+      <button class="save-btn" id="saveBtn">오늘 기록 저장 확인</button>
       <div class="save-toast" id="saveToast">저장됐어요</div>
     </div>
 
@@ -191,6 +249,9 @@
     <div class="section-title">최근 14일 성공률</div>
     <div id="trendArea"><div class="loading">불러오는 중...</div></div>
 
+    <div class="section-title">최근 14일 평균 도움 단계 (낮을수록 독립수행 ↑)</div>
+    <div id="levelTrendArea"><div class="loading">불러오는 중...</div></div>
+
     <div class="section-title">날짜별 기록</div>
     <div id="dateNavHist" class="date-nav">
       <button id="histPrevDay">‹</button>
@@ -200,13 +261,39 @@
     <div class="card" id="histCard">
       <div class="loading">불러오는 중...</div>
     </div>
+
+    <div class="section-title">기간 리포트 내보내기</div>
+    <div class="card">
+      <div class="report-row">
+        <input type="date" id="reportFrom">
+        <span class="tilde">~</span>
+        <input type="date" id="reportTo">
+      </div>
+      <button class="report-btn" id="reportBtn">리포트 텍스트 파일 만들기</button>
+    </div>
+  </div>
+
+  <div id="viewRef" class="view">
+    <div class="ref-disclaimer">이 자료는 공개된 ABA(응용행동분석) 문헌과 임상 가이드를 참고해 홈 트레이닝용으로 알기 쉽게 정리한 요약입니다. 진단이나 개입 계획을 대체하지 않으며, 실제 목표 설정과 기준 조정은 담당 BCBA(행동분석전문가) 등 전문가와 상의해서 결정하세요.</div>
+    <div id="refArea"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="detailModal">
+  <div class="modal-sheet">
+    <div class="modal-head">
+      <h3 id="detailTitle">스킬 상세</h3>
+      <button class="modal-close" id="detailClose">×</button>
+    </div>
+    <div id="detailBody"></div>
   </div>
 </div>
 
 <script>
-// 이제 구글 시트 없이 이 기기(브라우저)의 localStorage에 저장합니다.
+// 이 앱은 구글 시트 없이 이 기기(브라우저)의 localStorage에만 저장합니다.
 const STORAGE_KEY_SKILLS = 'aba_skills';
-const STORAGE_KEY_ENTRIES = 'aba_entries';
+const STORAGE_KEY_ALLDATA = 'aba_alldata';
+const STORAGE_KEY_ENTRIES_OLD = 'aba_entries'; // 이전 버전 마이그레이션용
 
 const DEFAULT_SKILLS = [
   {id:'sk_line', name:'직선 모방', domain:'동작모방'},
@@ -217,19 +304,26 @@ const DEFAULT_SKILLS = [
 ];
 const REINFORCER_CHIPS = ['간식','칭찬','스킨십','좋아하는 놀이','노래'];
 const LEVEL_LABELS = {1:'1 독립', 2:'2 힌트', 3:'3 모델링', 4:'4 손잡기'};
+const LEVEL_SHORT = {1:'Lv1 독립', 2:'Lv2 힌트', 3:'Lv3 모델링', 4:'Lv4 손잡기'};
+const RESULT_LABEL = {success:'성공', partial:'부분', fail:'실패'};
 
 const SKILL_CATALOG = {
-  'Mand (요구하기)': ['원하는 것을 손 뻗어 요구하기', '좋아하는 사물을 소리/단어/제스처로 요구하기', '"도와줘" 요청하기', '싫어요/그만 표현하기'],
-  'Tact (이름대기)': ['눈앞의 사물 이름 말하기', '동작 보고 말로 설명하기', '그림책 속 사물 명명하기'],
-  '수용언어 (Listener)': ['이름 부르면 쳐다보기', '1단계 지시 따르기', '사물 이름 듣고 가져오기'],
-  '동작모방 (Motor Imitation)': ['대근육 동작 모방', '소근육 동작 모방', '사물 이용한 동작 모방']
+  'Mand (요구하기)': ['원하는 것을 손 뻗어 요구하기', '좋아하는 사물을 소리/단어/제스처로 요구하기', '"도와줘" 요청하기', '싫어요/그만 표현하기', '두 가지 중 선택해서 요구하기'],
+  'Tact (이름대기)': ['눈앞의 사물 이름 말하기', '동작 보고 말로 설명하기', '그림책 속 사물 명명하기', '신체 부위 이름대기', '가족 구성원 이름대기'],
+  '수용언어 (Listener)': ['이름 부르면 쳐다보기', '1단계 지시 따르기', '사물 이름 듣고 가져오기', '2단계 연속 지시 따르기', '"안돼/멈춰" 반응하기'],
+  '동작모방 (Motor Imitation)': ['대근육 동작 모방', '소근육 동작 모방', '사물 이용한 동작 모방', '연속 2동작 모방'],
+  '에코익 (음성모방)': ['소리/음절 따라 말하기', '단어 따라 말하기', '간단한 구절 따라 말하기'],
+  '자조기술 (Self-help)': ['숟가락으로 스스로 먹기', '손 씻기 순서대로 하기', '옷 벗기/입기 돕기 따라하기', '양치 순서 따라하기', '신발 신고 벗기'],
+  '독립놀이 (Independent Play)': ['혼자서 1~2분 장난감 갖고 놀기', '블록 쌓기 혼자 시도', '책 혼자 넘겨보기'],
+  '사회성/사회적 놀이': ['눈맞춤 유지하기', '차례 기다리기(순서 주고받기)', '간단한 몸짓 놀이 따라하기(짝짜꿍 등)', '형/또래와 짧게 상호작용하기'],
+  '시각변별/매칭 (Visual-Matching)': ['같은 색깔 짝짓기', '같은 모양 짝짓기', '동일한 그림 카드 매칭', '크기별로 순서 맞추기']
 };
 
 let skills = [];
-let globalEntries = {};
+let allData = {}; // allData[dateStr][skillId] = {mission, sessions:[{time, level, result, reinforcer, note}]}
+let draft = {};   // draft[skillId] = {level, result, reinforcer, note} - 아직 세션에 추가 안 된 임시 입력값
 let todayDate = new Date();
 let histDate = new Date();
-let currentEntry = {};
 
 function fmtDate(d){
   const y = d.getFullYear();
@@ -241,23 +335,14 @@ function fmtDateLabel(d){
   const wd = ['일','월','화','수','목','금','토'][d.getDay()];
   return `${d.getMonth()+1}월 ${d.getDate()}일 (${wd})`;
 }
-
-function loadSkillsLocal(){
-  const saved = localStorage.getItem(STORAGE_KEY_SKILLS);
-  skills = saved ? JSON.parse(saved) : DEFAULT_SKILLS;
+function fmtTime(d){
+  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
 }
-function saveSkillsLocal(){
-  localStorage.setItem(STORAGE_KEY_SKILLS, JSON.stringify(skills));
+function addDays(d, n){
+  const nd = new Date(d);
+  nd.setDate(nd.getDate()+n);
+  return nd;
 }
-
-function loadEntriesLocal(){
-  const saved = localStorage.getItem(STORAGE_KEY_ENTRIES);
-  globalEntries = saved ? JSON.parse(saved) : {};
-}
-function saveEntriesLocal(){
-  localStorage.setItem(STORAGE_KEY_ENTRIES, JSON.stringify(globalEntries));
-}
-
 function escapeHtml(str){
   if(!str) return '';
   const div = document.createElement('div');
@@ -265,90 +350,228 @@ function escapeHtml(str){
   return div.innerHTML;
 }
 
+/* ---------- 저장/로드 ---------- */
+function loadSkillsLocal(){
+  const saved = localStorage.getItem(STORAGE_KEY_SKILLS);
+  skills = saved ? JSON.parse(saved) : DEFAULT_SKILLS;
+}
+function saveSkillsLocal(){
+  localStorage.setItem(STORAGE_KEY_SKILLS, JSON.stringify(skills));
+}
+function saveAllData(){
+  localStorage.setItem(STORAGE_KEY_ALLDATA, JSON.stringify(allData));
+}
+function loadAllData(){
+  const saved = localStorage.getItem(STORAGE_KEY_ALLDATA);
+  if(saved){ allData = JSON.parse(saved); return; }
+  // 이전 버전(세션 없이 날짜당 1개 기록) 데이터가 있으면 새 구조로 변환
+  const old = localStorage.getItem(STORAGE_KEY_ENTRIES_OLD);
+  if(old){
+    const oldData = JSON.parse(old);
+    const migrated = {};
+    Object.keys(oldData).forEach(dateStr=>{
+      migrated[dateStr] = {};
+      Object.keys(oldData[dateStr]).forEach(skillId=>{
+        const e = oldData[dateStr][skillId] || {};
+        migrated[dateStr][skillId] = {
+          mission: e.mission || '',
+          sessions: e.result ? [{time:'09:00', level:e.level||null, result:e.result, reinforcer:e.reinforcer||null, note:e.note||''}] : []
+        };
+      });
+    });
+    allData = migrated;
+    saveAllData();
+  } else {
+    allData = {};
+  }
+}
+
+function getDayEntry(dateStr){
+  if(!allData[dateStr]) allData[dateStr] = {};
+  return allData[dateStr];
+}
+function getSkillEntry(dateStr, skillId){
+  const day = getDayEntry(dateStr);
+  if(!day[skillId]) day[skillId] = {mission:'', sessions:[]};
+  return day[skillId];
+}
+function getDraft(skillId){
+  if(!draft[skillId]) draft[skillId] = {level:null, result:null, reinforcer:null, note:''};
+  return draft[skillId];
+}
+
+/* ---------- 마스터리 판정 ---------- */
+function allSessionsForSkill(skillId){
+  const list = [];
+  Object.keys(allData).sort().forEach(dateStr=>{
+    const entry = allData[dateStr][skillId];
+    if(entry && entry.sessions){
+      entry.sessions.forEach(s=> list.push(Object.assign({date:dateStr}, s)));
+    }
+  });
+  // 날짜순 + 같은날은 시간순으로 이미 sessions 추가 순서라 대체로 맞음
+  return list;
+}
+function isMastered(skillId){
+  const list = allSessionsForSkill(skillId);
+  if(list.length < 3) return false;
+  const last3 = list.slice(-3);
+  return last3.every(s => s.result === 'success');
+}
+
+/* ---------- 오늘 탭 렌더 ---------- */
 function renderSkillCards(){
+  const dateStr = fmtDate(todayDate);
   const container = document.getElementById('skillCards');
   container.innerHTML = '';
   skills.forEach(skill=>{
-    const entry = currentEntry[skill.id] || {level:null, result:null, reinforcer:null, note:'', mission:''};
+    const entry = getSkillEntry(dateStr, skill.id);
+    const d = getDraft(skill.id);
+    const mastered = isMastered(skill.id);
     const card = document.createElement('div');
     card.className = 'card skill-card';
     card.innerHTML = `
       <div class="skill-head">
         <div>
-          <div class="skill-name">${escapeHtml(skill.name)}</div>
+          <button type="button" class="skill-name-btn" data-detail="${skill.id}"><span class="skill-name">${escapeHtml(skill.name)}</span></button>
           ${skill.domain ? `<div class="skill-domain">${escapeHtml(skill.domain)}</div>` : ''}
+          ${mastered ? `<div class="mastery-badge">🎯 최근 3회 연속 성공 · 레벨업 고려</div>` : ''}
         </div>
         <button class="skill-remove" data-remove="${skill.id}">삭제</button>
       </div>
       <div class="row-label">오늘의 미션</div>
       <input type="text" class="mission-input" data-mission="${skill.id}" placeholder="예: 미션 입력" value="${escapeHtml(entry.mission||'')}">
-      <div class="row-label">도움 단계</div>
+
+      <div class="row-label">도움 단계 (이번 세션)</div>
       <div class="level-row" data-level-group="${skill.id}">
-        ${[1,2,3,4].map(l=>`<button type="button" class="level-btn ${entry.level===l?'selected':''}" data-level="${l}">${LEVEL_LABELS[l]}</button>`).join('')}
+        ${[1,2,3,4].map(l=>`<button type="button" class="level-btn ${d.level===l?'selected':''}" data-level="${l}">${LEVEL_LABELS[l]}</button>`).join('')}
       </div>
-      <div class="row-label">결과</div>
+      <div class="row-label">결과 (이번 세션)</div>
       <div class="result-row" data-result-group="${skill.id}">
-        <button type="button" class="result-btn ${entry.result==='success'?'selected':''}" data-r="success">성공</button>
-        <button type="button" class="result-btn ${entry.result==='partial'?'selected':''}" data-r="partial">부분</button>
-        <button type="button" class="result-btn ${entry.result==='fail'?'selected':''}" data-r="fail">실패</button>
+        <button type="button" class="result-btn ${d.result==='success'?'selected':''}" data-r="success">성공</button>
+        <button type="button" class="result-btn ${d.result==='partial'?'selected':''}" data-r="partial">부분</button>
+        <button type="button" class="result-btn ${d.result==='fail'?'selected':''}" data-r="fail">실패</button>
       </div>
       <div class="row-label">강화물</div>
       <div class="chip-row" data-chip-group="${skill.id}">
-        ${REINFORCER_CHIPS.map(c=>`<button type="button" class="chip ${entry.reinforcer===c?'selected':''}" data-chip="${c}">${c}</button>`).join('')}
+        ${REINFORCER_CHIPS.map(c=>`<button type="button" class="chip ${d.reinforcer===c?'selected':''}" data-chip="${c}">${c}</button>`).join('')}
       </div>
       <div class="row-label">메모</div>
-      <textarea class="note" data-note="${skill.id}" placeholder="특이사항">${escapeHtml(entry.note||'')}</textarea>
+      <textarea class="note" data-note="${skill.id}" placeholder="특이사항">${escapeHtml(d.note||'')}</textarea>
+
+      <button type="button" class="add-session-btn" data-addsession="${skill.id}">+ 이 세션 기록 추가</button>
+
+      <div class="sess-list">
+        <div class="sess-list-title">오늘 기록된 세션 (${entry.sessions.length}회)</div>
+        <div data-sesslist="${skill.id}">
+          ${entry.sessions.length === 0 ? `<div class="sess-empty">아직 오늘 기록된 세션이 없어요</div>` :
+            entry.sessions.map((s, idx)=>`
+              <div class="sess-row">
+                <span class="sess-time">${escapeHtml(s.time||'')}</span>
+                <span class="sess-level">${s.level?('Lv'+s.level):'-'}</span>
+                <span class="sess-badge ${s.result}">${RESULT_LABEL[s.result]||'-'}</span>
+                ${s.reinforcer ? `<span class="sess-level">${escapeHtml(s.reinforcer)}</span>` : ''}
+                ${s.note ? `<span class="sess-note">${escapeHtml(s.note)}</span>` : ''}
+                <button class="sess-del" data-delsession="${skill.id}|${idx}">×</button>
+              </div>
+            `).join('')
+          }
+        </div>
+      </div>
     `;
     container.appendChild(card);
   });
 
+  bindSkillCardEvents(dateStr);
+}
+
+function bindSkillCardEvents(dateStr){
+  const container = document.getElementById('skillCards');
+
   container.querySelectorAll('.mission-input').forEach(inp=>{
     inp.addEventListener('input', ()=>{
       const id = inp.dataset.mission;
-      if(!currentEntry[id]) currentEntry[id] = {};
-      currentEntry[id].mission = inp.value;
+      getSkillEntry(dateStr, id).mission = inp.value;
+      saveAllData();
     });
   });
+
   container.querySelectorAll('.level-row').forEach(row=>{
     const id = row.dataset.levelGroup;
     row.querySelectorAll('.level-btn').forEach(btn=>{
       btn.addEventListener('click', ()=>{
         const lvl = parseInt(btn.dataset.level);
-        if(!currentEntry[id]) currentEntry[id] = {};
-        currentEntry[id].level = currentEntry[id].level === lvl ? null : lvl;
-        row.querySelectorAll('.level-btn').forEach(b=>b.classList.toggle('selected', parseInt(b.dataset.level)===currentEntry[id].level));
+        const d = getDraft(id);
+        d.level = d.level === lvl ? null : lvl;
+        row.querySelectorAll('.level-btn').forEach(b=>b.classList.toggle('selected', parseInt(b.dataset.level)===d.level));
       });
     });
   });
+
   container.querySelectorAll('.result-row').forEach(row=>{
     const id = row.dataset.resultGroup;
     row.querySelectorAll('.result-btn').forEach(btn=>{
       btn.addEventListener('click', ()=>{
         const r = btn.dataset.r;
-        if(!currentEntry[id]) currentEntry[id] = {};
-        currentEntry[id].result = currentEntry[id].result === r ? null : r;
-        row.querySelectorAll('.result-btn').forEach(b=>b.classList.toggle('selected', b.dataset.r===currentEntry[id].result));
+        const d = getDraft(id);
+        d.result = d.result === r ? null : r;
+        row.querySelectorAll('.result-btn').forEach(b=>b.classList.toggle('selected', b.dataset.r===d.result));
       });
     });
   });
+
   container.querySelectorAll('.chip-row').forEach(row=>{
     const id = row.dataset.chipGroup;
     row.querySelectorAll('.chip').forEach(btn=>{
       btn.addEventListener('click', ()=>{
         const c = btn.dataset.chip;
-        if(!currentEntry[id]) currentEntry[id] = {};
-        currentEntry[id].reinforcer = currentEntry[id].reinforcer === c ? null : c;
-        row.querySelectorAll('.chip').forEach(b=>b.classList.toggle('selected', b.dataset.chip===currentEntry[id].reinforcer));
+        const d = getDraft(id);
+        d.reinforcer = d.reinforcer === c ? null : c;
+        row.querySelectorAll('.chip').forEach(b=>b.classList.toggle('selected', b.dataset.chip===d.reinforcer));
       });
     });
   });
+
   container.querySelectorAll('textarea.note').forEach(ta=>{
     ta.addEventListener('input', ()=>{
       const id = ta.dataset.note;
-      if(!currentEntry[id]) currentEntry[id] = {};
-      currentEntry[id].note = ta.value;
+      getDraft(id).note = ta.value;
     });
   });
+
+  container.querySelectorAll('[data-addsession]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.dataset.addsession;
+      const d = getDraft(id);
+      if(!d.result){
+        alert('결과(성공/부분/실패)는 선택해야 세션을 추가할 수 있어요');
+        return;
+      }
+      const entry = getSkillEntry(dateStr, id);
+      entry.sessions.push({
+        time: fmtTime(new Date()),
+        level: d.level,
+        result: d.result,
+        reinforcer: d.reinforcer,
+        note: d.note
+      });
+      saveAllData();
+      draft[id] = {level:null, result:null, reinforcer:null, note:''};
+      renderSkillCards();
+    });
+  });
+
+  container.querySelectorAll('[data-delsession]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const [id, idxStr] = btn.dataset.delsession.split('|');
+      const idx = parseInt(idxStr);
+      const entry = getSkillEntry(dateStr, id);
+      entry.sessions.splice(idx,1);
+      saveAllData();
+      renderSkillCards();
+    });
+  });
+
   container.querySelectorAll('[data-remove]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       skills = skills.filter(s=>s.id!==btn.dataset.remove);
@@ -356,6 +579,10 @@ function renderSkillCards(){
       renderSkillCards();
       renderCatalog();
     });
+  });
+
+  container.querySelectorAll('[data-detail]').forEach(btn=>{
+    btn.addEventListener('click', ()=> openDetail(btn.dataset.detail));
   });
 }
 
@@ -388,17 +615,32 @@ function renderCatalog(){
 }
 
 function refreshTodayView(){
-  const dateStr = fmtDate(todayDate);
   document.getElementById('curDateLabel').textContent = fmtDateLabel(todayDate);
   document.getElementById('headerDate').textContent = fmtDateLabel(new Date()) + ' 기준';
-
-  currentEntry = globalEntries[dateStr] || {};
   renderSkillCards();
   renderCatalog();
 }
 
-document.getElementById('prevDay').addEventListener('click', ()=>{ todayDate.setDate(todayDate.getDate()-1); refreshTodayView(); });
-document.getElementById('nextDay').addEventListener('click', ()=>{ todayDate.setDate(todayDate.getDate()+1); refreshTodayView(); });
+document.getElementById('prevDay').addEventListener('click', ()=>{ todayDate = addDays(todayDate,-1); refreshTodayView(); });
+document.getElementById('nextDay').addEventListener('click', ()=>{ todayDate = addDays(todayDate,1); refreshTodayView(); });
+
+document.getElementById('copyYesterdayBtn').addEventListener('click', ()=>{
+  const todayStr = fmtDate(todayDate);
+  const yStr = fmtDate(addDays(todayDate,-1));
+  const yEntry = allData[yStr] || {};
+  let copied = 0;
+  skills.forEach(skill=>{
+    const entry = getSkillEntry(todayStr, skill.id);
+    const yesterday = yEntry[skill.id];
+    if((!entry.mission || entry.mission.trim()==='') && yesterday && yesterday.mission){
+      entry.mission = yesterday.mission;
+      copied++;
+    }
+  });
+  saveAllData();
+  renderSkillCards();
+  alert(copied>0 ? `${copied}개 스킬의 미션을 전날에서 불러왔어요` : '불러올 전날 미션이 없어요 (이미 채워져 있거나 전날 기록 없음)');
+});
 
 document.getElementById('addTabCatalog').addEventListener('click', ()=>{
   document.getElementById('addTabCatalog').classList.add('active');
@@ -425,88 +667,91 @@ document.getElementById('addSkillBtn').addEventListener('click', ()=>{
 });
 
 document.getElementById('saveBtn').addEventListener('click', ()=>{
-  const dateStr = fmtDate(todayDate);
+  // 모든 입력은 이미 즉시 저장되고 있음. 이 버튼은 확인용 피드백만 제공.
   const toast = document.getElementById('saveToast');
-
-  globalEntries[dateStr] = JSON.parse(JSON.stringify(currentEntry));
-  saveEntriesLocal();
-
   toast.textContent = "저장됐어요";
   toast.classList.add('show');
   setTimeout(()=>toast.classList.remove('show'), 2000);
 });
 
-document.getElementById('tabToday').addEventListener('click', ()=>{
-  document.getElementById('tabToday').classList.add('active');
-  document.getElementById('tabHistory').classList.remove('active');
-  document.getElementById('viewToday').classList.add('active');
-  document.getElementById('viewHistory').classList.remove('active');
-});
+/* ---------- 탭 전환 ---------- */
+function setActiveTab(tabId, viewId){
+  ['tabToday','tabHistory','tabRef'].forEach(t=>document.getElementById(t).classList.toggle('active', t===tabId));
+  ['viewToday','viewHistory','viewRef'].forEach(v=>document.getElementById(v).classList.toggle('active', v===viewId));
+}
+document.getElementById('tabToday').addEventListener('click', ()=> setActiveTab('tabToday','viewToday'));
 document.getElementById('tabHistory').addEventListener('click', ()=>{
-  document.getElementById('tabHistory').classList.add('active');
-  document.getElementById('tabToday').classList.remove('active');
-  document.getElementById('viewHistory').classList.add('active');
-  document.getElementById('viewToday').classList.remove('active');
+  setActiveTab('tabHistory','viewHistory');
   refreshHistoryView();
 });
+document.getElementById('tabRef').addEventListener('click', ()=>{
+  setActiveTab('tabRef','viewRef');
+  if(!document.getElementById('refArea').dataset.rendered) renderRef();
+});
 
-document.getElementById('histPrevDay').addEventListener('click', ()=>{ histDate.setDate(histDate.getDate()-1); refreshHistDateCard(); });
-document.getElementById('histNextDay').addEventListener('click', ()=>{ histDate.setDate(histDate.getDate()+1); refreshHistDateCard(); });
+document.getElementById('histPrevDay').addEventListener('click', ()=>{ histDate = addDays(histDate,-1); refreshHistDateCard(); });
+document.getElementById('histNextDay').addEventListener('click', ()=>{ histDate = addDays(histDate,1); refreshHistDateCard(); });
 
 function refreshHistDateCard(){
   document.getElementById('histDateLabel').textContent = fmtDateLabel(histDate);
   const dateStr = fmtDate(histDate);
-  const entry = globalEntries[dateStr] || {};
+  const entry = allData[dateStr] || {};
   const card = document.getElementById('histCard');
-  const entries = Object.keys(entry);
+  const skillIds = Object.keys(entry).filter(id => entry[id] && entry[id].sessions && entry[id].sessions.length>0 || (entry[id] && entry[id].mission));
 
-  if(entries.length === 0){
+  if(skillIds.length === 0){
     card.innerHTML = `<div class="history-empty">이 날짜엔 기록이 없어요</div>`;
     return;
   }
 
-  card.innerHTML = entries.map(id => {
+  card.innerHTML = skillIds.map(id=>{
     const e = entry[id];
     const skill = skills.find(s=>s.id===id);
     const name = skill ? skill.name : id;
-    const badge = e.result ? `<span class="badge ${e.result}">${e.result==='success'?'성공':e.result==='partial'?'부분':'실패'}</span>` : '';
-    return `<div class="hist-entry">
-      <div class="top-row"><div class="name">${escapeHtml(name)}</div>${badge}</div>
+    const sessRows = (e.sessions||[]).map(s=>`
+      <div class="sess-row">
+        <span class="sess-time">${escapeHtml(s.time||'')}</span>
+        <span class="sess-level">${s.level?('Lv'+s.level):'-'}</span>
+        <span class="sess-badge ${s.result}">${RESULT_LABEL[s.result]||'-'}</span>
+        ${s.reinforcer ? `<span class="sess-level">${escapeHtml(s.reinforcer)}</span>` : ''}
+        ${s.note ? `<span class="sess-note">${escapeHtml(s.note)}</span>` : ''}
+      </div>
+    `).join('') || `<div class="sess-empty">기록된 세션 없음</div>`;
+    return `<div class="hist-skill-block">
+      <div class="name">${escapeHtml(name)}</div>
       ${e.mission ? `<div class="mission">미션: ${escapeHtml(e.mission)}</div>` : ''}
-      <div class="meta">도움: ${e.level || '-'} · 강화물: ${e.reinforcer || '-'} · 메모: ${e.note || '-'}</div>
+      ${sessRows}
     </div>`;
   }).join('');
+}
+
+function last14Dates(){
+  const dates = [];
+  for(let i=0; i<14; i++) dates.push(fmtDate(addDays(new Date(), -i)));
+  return dates;
 }
 
 function refreshTrend(){
   const trendArea = document.getElementById('trendArea');
   const skillStats = {};
-
-  const dates = [];
-  for(let i=0; i<14; i++) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    dates.push(fmtDate(d));
-  }
-
-  dates.forEach(dStr => {
-    const entry = globalEntries[dStr] || {};
+  last14Dates().forEach(dStr => {
+    const entry = allData[dStr] || {};
     Object.keys(entry).forEach(id => {
-      const e = entry[id];
-      if(!e || !e.result) return;
-      if(!skillStats[id]) skillStats[id] = {sum:0, count:0};
-      const val = e.result === 'success' ? 1 : e.result === 'partial' ? 0.5 : 0;
-      skillStats[id].sum += val;
-      skillStats[id].count++;
+      const sessions = (entry[id] && entry[id].sessions) || [];
+      sessions.forEach(s=>{
+        if(!s.result) return;
+        if(!skillStats[id]) skillStats[id] = {sum:0, count:0};
+        const val = s.result === 'success' ? 1 : s.result === 'partial' ? 0.5 : 0;
+        skillStats[id].sum += val;
+        skillStats[id].count++;
+      });
     });
   });
-
   const statIds = Object.keys(skillStats);
   if(statIds.length === 0){
     trendArea.innerHTML = `<div class="history-empty">최근 14일 통계 데이터가 없습니다.</div>`;
     return;
   }
-
   trendArea.innerHTML = statIds.map(id => {
     const skill = skills.find(s=>s.id===id);
     const name = skill ? skill.name : id;
@@ -515,18 +760,93 @@ function refreshTrend(){
     return `<div class="trend-row">
       <div class="trend-head"><span>${escapeHtml(name)}</span><span class="pct">${pct}%</span></div>
       <div class="trend-bar-bg"><div class="trend-bar-fill" style="width:${pct}%"></div></div>
-      <div class="trend-sub">${stat.count}회 기록됨</div>
+      <div class="trend-sub">${stat.count}회 세션 기록됨</div>
+    </div>`;
+  }).join('');
+}
+
+function refreshLevelTrend(){
+  const area = document.getElementById('levelTrendArea');
+  const skillStats = {};
+  last14Dates().forEach(dStr => {
+    const entry = allData[dStr] || {};
+    Object.keys(entry).forEach(id => {
+      const sessions = (entry[id] && entry[id].sessions) || [];
+      sessions.forEach(s=>{
+        if(!s.level) return;
+        if(!skillStats[id]) skillStats[id] = {sum:0, count:0};
+        skillStats[id].sum += s.level;
+        skillStats[id].count++;
+      });
+    });
+  });
+  const statIds = Object.keys(skillStats);
+  if(statIds.length === 0){
+    area.innerHTML = `<div class="history-empty">최근 14일 도움 단계 데이터가 없습니다.</div>`;
+    return;
+  }
+  area.innerHTML = statIds.map(id => {
+    const skill = skills.find(s=>s.id===id);
+    const name = skill ? skill.name : id;
+    const stat = skillStats[id];
+    const avg = stat.sum / stat.count;
+    const fillPct = Math.round(((4 - avg) / 3) * 100); // 레벨1(독립)에 가까울수록 채워짐
+    return `<div class="trend-row">
+      <div class="trend-head"><span>${escapeHtml(name)}</span><span class="pct">평균 Lv ${avg.toFixed(1)}</span></div>
+      <div class="trend-bar-bg"><div class="trend-bar-fill level" style="width:${Math.max(0,Math.min(100,fillPct))}%"></div></div>
+      <div class="trend-sub">${stat.count}회 세션 · 막대가 길수록 독립수행 비중 높음</div>
     </div>`;
   }).join('');
 }
 
 function refreshHistoryView(){
   refreshTrend();
+  refreshLevelTrend();
   refreshHistDateCard();
 }
 
+/* ---------- 스킬 상세 모달 ---------- */
+function openDetail(skillId){
+  const skill = skills.find(s=>s.id===skillId);
+  document.getElementById('detailTitle').textContent = skill ? skill.name + ' 상세 기록' : '상세 기록';
+  const list = allSessionsForSkill(skillId);
+  const body = document.getElementById('detailBody');
+  if(list.length === 0){
+    body.innerHTML = `<div class="history-empty">아직 기록된 세션이 없어요</div>`;
+  } else {
+    // 날짜별로 묶기, 최신순
+    const byDate = {};
+    list.forEach(s=>{ (byDate[s.date] = byDate[s.date]||[]).push(s); });
+    const dates = Object.keys(byDate).sort().reverse();
+    body.innerHTML = dates.map(dStr=>{
+      const dEntry = allData[dStr][skillId];
+      return `<div class="modal-day">
+        <div class="md-date">${dStr}</div>
+        ${dEntry.mission ? `<div class="md-mission">미션: ${escapeHtml(dEntry.mission)}</div>` : ''}
+        ${byDate[dStr].map(s=>`
+          <div class="sess-row">
+            <span class="sess-time">${escapeHtml(s.time||'')}</span>
+            <span class="sess-level">${s.level?('Lv'+s.level):'-'}</span>
+            <span class="sess-badge ${s.result}">${RESULT_LABEL[s.result]||'-'}</span>
+            ${s.reinforcer ? `<span class="sess-level">${escapeHtml(s.reinforcer)}</span>` : ''}
+            ${s.note ? `<span class="sess-note">${escapeHtml(s.note)}</span>` : ''}
+          </div>
+        `).join('')}
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('detailModal').classList.add('show');
+}
+document.getElementById('detailClose').addEventListener('click', ()=>{
+  document.getElementById('detailModal').classList.remove('show');
+});
+document.getElementById('detailModal').addEventListener('click', (e)=>{
+  if(e.target.id === 'detailModal') document.getElementById('detailModal').classList.remove('show');
+});
+
+/* ---------- 백업 / 복원 ---------- */
 document.getElementById('exportBtn').addEventListener('click', ()=>{
-  const backup = { skills, entries: globalEntries, exportedAt: new Date().toISOString() };
+  const backup = { skills, allData, exportedAt: new Date().toISOString(), version: 2 };
   const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -547,7 +867,23 @@ document.getElementById('importFile').addEventListener('change', (e)=>{
     try{
       const data = JSON.parse(ev.target.result);
       if(data.skills) { skills = data.skills; saveSkillsLocal(); }
-      if(data.entries) { globalEntries = data.entries; saveEntriesLocal(); }
+      if(data.allData) { allData = data.allData; saveAllData(); }
+      else if(data.entries){
+        // 구버전 백업 파일 마이그레이션
+        const migrated = {};
+        Object.keys(data.entries).forEach(dateStr=>{
+          migrated[dateStr] = {};
+          Object.keys(data.entries[dateStr]).forEach(skillId=>{
+            const e = data.entries[dateStr][skillId] || {};
+            migrated[dateStr][skillId] = {
+              mission: e.mission || '',
+              sessions: e.result ? [{time:'09:00', level:e.level||null, result:e.result, reinforcer:e.reinforcer||null, note:e.note||''}] : []
+            };
+          });
+        });
+        allData = migrated;
+        saveAllData();
+      }
       refreshTodayView();
       alert('불러오기 완료');
     }catch(err){
@@ -558,9 +894,195 @@ document.getElementById('importFile').addEventListener('change', (e)=>{
   e.target.value = '';
 });
 
+/* ---------- 기간 리포트 ---------- */
+document.getElementById('reportBtn').addEventListener('click', ()=>{
+  const fromStr = document.getElementById('reportFrom').value;
+  const toStr = document.getElementById('reportTo').value;
+  if(!fromStr || !toStr){ alert('시작일과 종료일을 모두 선택하세요'); return; }
+  const from = new Date(fromStr);
+  const to = new Date(toStr);
+  if(from > to){ alert('시작일이 종료일보다 늦을 수 없어요'); return; }
+
+  const stats = {}; // stats[skillId] = {success,partial,fail,levelSum,levelCount,missions:Set}
+  let cursor = new Date(from);
+  while(cursor <= to){
+    const dStr = fmtDate(cursor);
+    const entry = allData[dStr] || {};
+    Object.keys(entry).forEach(id=>{
+      const e = entry[id];
+      if(!stats[id]) stats[id] = {success:0, partial:0, fail:0, levelSum:0, levelCount:0, missions:new Set()};
+      if(e.mission) stats[id].missions.add(e.mission);
+      (e.sessions||[]).forEach(s=>{
+        if(s.result) stats[id][s.result]++;
+        if(s.level){ stats[id].levelSum += s.level; stats[id].levelCount++; }
+      });
+    });
+    cursor = addDays(cursor,1);
+  }
+
+  const skillIds = Object.keys(stats);
+  let text = `성장 기록 리포트\n기간: ${fromStr} ~ ${toStr}\n생성일: ${fmtDate(new Date())}\n\n`;
+  if(skillIds.length === 0){
+    text += '해당 기간에 기록된 데이터가 없습니다.\n';
+  } else {
+    skillIds.forEach(id=>{
+      const skill = skills.find(s=>s.id===id);
+      const name = skill ? skill.name : id;
+      const st = stats[id];
+      const total = st.success + st.partial + st.fail;
+      const rate = total > 0 ? Math.round(((st.success + st.partial*0.5) / total) * 100) : 0;
+      const avgLevel = st.levelCount > 0 ? (st.levelSum/st.levelCount).toFixed(1) : '-';
+      text += `[ ${name} ]\n`;
+      text += `- 총 세션: ${total}회 (성공 ${st.success} / 부분 ${st.partial} / 실패 ${st.fail})\n`;
+      text += `- 성공률: ${rate}%\n`;
+      text += `- 평균 도움 단계: Lv ${avgLevel}\n`;
+      if(st.missions.size > 0){
+        text += `- 사용된 미션: ${Array.from(st.missions).join(', ')}\n`;
+      }
+      text += `\n`;
+    });
+  }
+
+  const blob = new Blob([text], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `growth_report_${fromStr}_to_${toStr}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+(function initReportDates(){
+  document.getElementById('reportFrom').value = fmtDate(addDays(new Date(),-13));
+  document.getElementById('reportTo').value = fmtDate(new Date());
+})();
+
+/* ---------- ABA 참고자료 탭 ---------- */
+function renderRef(){
+  const area = document.getElementById('refArea');
+  area.dataset.rendered = '1';
+  area.innerHTML = `
+
+  <details class="ref-section" open>
+    <summary>1. ABA가 뭔가요 (기본 원리)</summary>
+    <div class="ref-body">
+      <p>응용행동분석(ABA, Applied Behavior Analysis)은 행동과 그 전후 상황을 관찰해서, 원하는 행동은 더 자주 나오게 하고 문제행동은 줄어들게 환경을 조정하는 과학적 접근입니다. 자폐 스펙트럼이나 발달지연이 있는 아이의 의사소통·사회성·자조기술을 가르칠 때 가장 널리 쓰이는 방법 중 하나입니다.</p>
+      <h4>핵심 구조: A-B-C</h4>
+      <ul>
+        <li><b>A (선행사건, Antecedent)</b> — 지시나 상황. 예: "이거 뭐야?" 라고 묻는 것</li>
+        <li><b>B (행동, Behavior)</b> — 아이가 보이는 반응</li>
+        <li><b>C (결과, Consequence)</b> — 반응 뒤에 주어지는 강화(칭찬, 간식 등)나 피드백</li>
+      </ul>
+      <p>이 앱에서 "오늘의 미션(A) → 결과(B) → 강화물(C)"을 한 세트로 기록하게 만든 것도 이 구조를 그대로 따른 것입니다.</p>
+    </div>
+  </details>
+
+  <details class="ref-section">
+    <summary>2. 도움(프롬프트) 단계 이해하기</summary>
+    <div class="ref-body">
+      <p>프롬프트는 아이가 정답 행동을 할 수 있도록 주는 도움입니다. 도움을 많이 줄수록 성공 확률은 올라가지만, 그만큼 독립수행과는 멀어집니다. 목표는 도움을 서서히 줄여나가는 것, 즉 "프롬프트 페이딩"입니다.</p>
+      <h4>이 앱에서 쓰는 4단계</h4>
+      <table class="lv-table">
+        <tr><th>단계</th><th>의미</th></tr>
+        <tr><td>1 독립</td><td>도움 없이 스스로 수행</td></tr>
+        <tr><td>2 힌트</td><td>언어적 힌트나 손짓 정도의 가벼운 단서</td></tr>
+        <tr><td>3 모델링</td><td>어른이 먼저 시범을 보이고 아이가 따라함</td></tr>
+        <tr><td>4 손잡기</td><td>신체적으로 손을 잡고 함께 수행 (전신체적 촉구)</td></tr>
+      </table>
+      <h4>두 가지 접근 방식</h4>
+      <ul>
+        <li><b>최다→최소 (most-to-least)</b>: 처음엔 강한 도움을 줘서 실수 없이 성공 경험을 쌓게 하고, 점점 도움을 줄여감. 오류 없는 학습(errorless teaching)에 적합.</li>
+        <li><b>최소→최다 (least-to-most)</b>: 먼저 스스로 시도할 기회를 주고, 못하면 그때 필요한 만큼만 도움을 추가.</li>
+      </ul>
+      <p>실전 팁: 같은 스킬에서 도움 단계가 계속 3~4단계에 머물러 있다면, 그 과제가 아직 아이 수준보다 어렵거나 더 잘게 쪼갤 필요가 있다는 신호로 볼 수 있습니다.</p>
+    </div>
+  </details>
+
+  <details class="ref-section">
+    <summary>3. 마스터리(습득) 기준</summary>
+    <div class="ref-body">
+      <p>ABA 현장과 연구에서 흔히 쓰는 기준은 <b>정확도 80~100%를 2~3회 연속 세션에서 달성</b>하면 그 스킬을 "습득"으로 보는 것입니다. 안전과 직결된 기술(길 건너기처럼 실수가 위험한 것)은 100%에 가까운 더 엄격한 기준이 필요합니다.</p>
+      <p>여러 연구에서 공통적으로 나타나는 경향은, 습득 기준을 90~100%처럼 높게 잡을수록 나중에 그 기술이 오래 유지되는 반면, 80% 기준으로 낮게 잡으면 시간이 지나면서 수행이 다시 떨어지는 경우가 많았다는 점입니다. 즉 "일단 되는 것 같으니 넘어가자"보다는 조금 더 확인하고 넘어가는 편이 유지력 면에서 유리합니다.</p>
+      <h4>이 앱의 마스터리 뱃지</h4>
+      <p>스킬 카드에 뜨는 "🎯 레벨업 고려" 뱃지는 해당 스킬의 최근 3개 세션이 모두 "성공"일 때 표시됩니다. 이건 자동 판정이 아니라 참고용 신호입니다. 실제로 다음 목표로 넘어가기 전에는 다른 사람·다른 장소·다른 자료로도 되는지 한 번 더 확인(아래 일반화 항목 참고)하는 걸 권장합니다.</p>
+    </div>
+  </details>
+
+  <details class="ref-section">
+    <summary>4. 일반화와 유지 — 습득했다고 끝이 아님</summary>
+    <div class="ref-body">
+      <p>스킬을 습득했다고 바로 끝나는 게 아닙니다. 두 가지를 추가로 확인해야 진짜 "내 것"이 된 겁니다.</p>
+      <ul>
+        <li><b>일반화(Generalization)</b>: 배운 장소·사람·자료가 아닌 다른 상황에서도 같은 행동이 나오는지. 예를 들어 집 식탁에서 배운 "요구하기"가 마트에서도 나오는지.</li>
+        <li><b>유지(Maintenance)</b>: 시간이 지나도(몇 주 뒤에도) 그 기술이 남아있는지. 가끔 마스터된 스킬을 다시 한 번씩 체크(유지 프로브)하는 습관이 중요합니다.</li>
+      </ul>
+      <p>만약 마스터됐던 스킬이 다시 안 되기 시작했는데, 3~5세션 정도 다시 가르쳐도 원래 수준으로 안 돌아온다면, 처음 마스터리 기준을 너무 낮게 잡았거나 교육 방법 자체를 재점검할 필요가 있다는 신호로 보는 경우가 많습니다.</p>
+    </div>
+  </details>
+
+  <details class="ref-section">
+    <summary>5. 세션 기록하는 법 (앱 사용과 연결)</summary>
+    <div class="ref-body">
+      <p>하루에 한 스킬을 여러 번(여러 세션) 시도하는 게 자연스럽습니다. 이 앱은 세션마다 도움 단계·결과·강화물을 따로따로 기록하도록 만들어져 있습니다.</p>
+      <ol>
+        <li>오늘 기록 탭에서 그날의 미션을 한 문장으로 입력</li>
+        <li>세션을 시도할 때마다 도움 단계 / 결과 / 강화물 / 메모를 선택하고 "세션 기록 추가" 버튼으로 저장</li>
+        <li>같은 스킬을 여러 번 시도했다면 그때마다 반복해서 추가</li>
+        <li>스킬 이름을 누르면 그 스킬의 전체 히스토리(날짜별 전체 세션)를 한 번에 볼 수 있음</li>
+      </ol>
+      <h4>강화물 팁</h4>
+      <p>강화물은 그 순간 아이가 실제로 원하는 것이어야 효과가 있습니다. 같은 강화물만 반복해서 쓰면 흥미가 떨어지는 "포만 효과"가 생길 수 있으니, 몇 가지를 로테이션하면서 그날그날 아이 반응이 좋은 것을 쓰는 게 좋습니다.</p>
+    </div>
+  </details>
+
+  <details class="ref-section">
+    <summary>6. 어떤 영역부터 시작할지 (VB-MAPP 참고)</summary>
+    <div class="ref-body">
+      <p>VB-MAPP(언어행동 이정표 평가)는 언어와 관련 발달을 0~48개월 수준으로 나눠 평가하는 대표적인 ABA 평가 도구입니다. 이 앱의 "추천 목록" 탭도 그 틀에서 초기 발달 단계에 해당하는 항목들만 가정해 홈 트레이닝용으로 재구성한 것입니다.</p>
+      <h4>대표 영역</h4>
+      <ul>
+        <li><b>Mand (요구하기)</b>: 원하는 것을 표현하는 것. "쿠키 줘"처럼 즉각적인 보상이 따라오기 때문에 동기부여가 가장 강하게 걸리는 영역이라, 많은 프로그램에서 우선적으로 다루는 편입니다.</li>
+        <li><b>Tact (이름대기)</b>: 눈앞의 사물이나 상황을 말로 명명하는 것.</li>
+        <li><b>수용언어 / Listener</b>: 말을 듣고 그에 맞게 반응하는 것 (지시 따르기 등).</li>
+        <li><b>동작모방 (Motor Imitation)</b>: 다른 사람의 동작을 보고 따라하는 것. 이후 여러 학습의 기초가 됨.</li>
+      </ul>
+      <p>흔한 흐름은 Mand(요구하기)로 동기부여를 먼저 확보한 뒤, 동작모방·수용언어로 넓혀가는 방식입니다. 다만 실제 순서는 아이의 현재 수준에 따라 달라지므로, 참고만 하고 담당 전문가 판단을 우선하는 걸 권장합니다.</p>
+    </div>
+  </details>
+
+  <details class="ref-section">
+    <summary>7. 홈 트레이닝 실전 체크리스트</summary>
+    <div class="ref-body">
+      <ul>
+        <li>세션 전에 오늘의 미션을 한 문장으로 명확히 정하기</li>
+        <li>도움 단계는 실제로 필요한 만큼만 (과잉 도움 주의 — 너무 쉽게 도와주면 독립수행으로 안 넘어감)</li>
+        <li>강화물은 그 순간 아이가 원하는 것으로, 몇 가지 로테이션</li>
+        <li>결과는 기억에 의존하지 말고 그 즉시 기록</li>
+        <li>2주에 한 번 정도 히스토리 탭에서 추세 확인 — 성공률뿐 아니라 도움 단계가 낮아지는 방향(독립수행 증가)인지가 더 중요한 신호</li>
+        <li>마스터된 스킬도 가끔 다른 장소·사람으로 재확인 (일반화 체크)</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="ref-section">
+    <summary>참고문헌 / 더 읽어보기</summary>
+    <div class="ref-body">
+      <div class="ref-source-list">
+        Discrete Trial Training (DTT) 개념 및 프롬프트 위계 — ABS, Rori Care, Nexo ABA, Ambitions ABA 등 ABA 임상기관 가이드 종합<br>
+        마스터리 기준(80~100%, 2~3세션) 관련 — masteringaba.com, Praxis Notes BCBA 가이드, I Love ABA, PMC(NCBI) 게재 논문(Mastery Criterion Level 관련 연구) 종합<br>
+        VB-MAPP 영역 설명 — Verbal Beginnings, Blue ABA Therapy, marksundberg.com(VB-MAPP 공식 퍼블리셔) 종합<br>
+        <br>
+        본 요약은 위 자료들의 핵심 개념을 재구성한 것이며, 원문을 그대로 인용하지 않았습니다. 더 정확한 근거자료가 필요하면 각 기관의 원문이나 담당 BCBA에게 직접 문의하는 것을 권장합니다.
+      </div>
+    </div>
+  </details>
+  `;
+}
+
+/* ---------- 초기화 ---------- */
 (function init(){
   loadSkillsLocal();
-  loadEntriesLocal();
+  loadAllData();
   refreshTodayView();
 })();
 </script>
