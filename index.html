@@ -126,6 +126,9 @@
 
   .loading{ text-align:center; color: var(--ink-soft); padding: 40px 0; font-size: 13.5px; }
   .source-note{ font-size: 11px; color: var(--ink-soft); text-align:center; margin-top: 18px; line-height:1.6; }
+
+  .backup-row{ display:flex; gap:8px; margin-top: 10px; }
+  .backup-row button{ flex:1; padding: 10px 0; border-radius: 9px; border: 1px solid var(--line); background: var(--surface-soft); font-size: 12.5px; font-weight:600; color: var(--ink-soft); cursor:pointer; font-family: inherit; }
 </style>
 </head>
 <body>
@@ -172,7 +175,16 @@
       <div class="save-toast" id="saveToast">저장됐어요</div>
     </div>
 
-    <div class="source-note">추천 목록은 VB-MAPP·ABLLS-R 등 ABA 표준 영역에서 유아기 초기 발달 항목을 홈 스쿨링용으로 재구성한 목록입니다.</div>
+    <div class="card">
+      <div class="row-label" style="margin-top:0;">백업 / 복원 (기기 변경시 사용)</div>
+      <div class="backup-row">
+        <button id="exportBtn">내보내기 (파일 저장)</button>
+        <button id="importBtn">불러오기 (파일 선택)</button>
+      </div>
+      <input type="file" id="importFile" accept="application/json" style="display:none;">
+    </div>
+
+    <div class="source-note">추천 목록은 VB-MAPP·ABLLS-R 등 ABA 표준 영역에서 유아기 초기 발달 항목을 홈 스쿨링용으로 재구성한 목록입니다.<br>모든 기록은 이 기기(브라우저)에만 저장됩니다. 앱을 지우거나 브라우저 데이터를 삭제하면 사라지니, 가끔 "내보내기"로 백업해두세요.</div>
   </div>
 
   <div id="viewHistory" class="view">
@@ -192,8 +204,9 @@
 </div>
 
 <script>
-// ⚠️ 여기에 아까 구글에서 새로 발급받은 배포 주소를 통째로 붙여넣으세요!
-const API_URL = "https://script.google.com/macros/s/AKfycbxfhnsA2fDcIKPh7saNmd2emjNgOr5vaNqVyP7uitFrIavw6ZT0mbhN5Udz9X8L0hCMgg/exec";
+// 이제 구글 시트 없이 이 기기(브라우저)의 localStorage에 저장합니다.
+const STORAGE_KEY_SKILLS = 'aba_skills';
+const STORAGE_KEY_ENTRIES = 'aba_entries';
 
 const DEFAULT_SKILLS = [
   {id:'sk_line', name:'직선 모방', domain:'동작모방'},
@@ -213,7 +226,7 @@ const SKILL_CATALOG = {
 };
 
 let skills = [];
-let globalEntries = {}; 
+let globalEntries = {};
 let todayDate = new Date();
 let histDate = new Date();
 let currentEntry = {};
@@ -230,24 +243,19 @@ function fmtDateLabel(d){
 }
 
 function loadSkillsLocal(){
-  const saved = localStorage.getItem('aba_skills');
+  const saved = localStorage.getItem(STORAGE_KEY_SKILLS);
   skills = saved ? JSON.parse(saved) : DEFAULT_SKILLS;
 }
 function saveSkillsLocal(){
-  localStorage.setItem('aba_skills', JSON.stringify(skills));
+  localStorage.setItem(STORAGE_KEY_SKILLS, JSON.stringify(skills));
 }
 
-async function fetchAllData() {
-  if (API_URL.includes("여기에_구글")) return;
-  try {
-    const res = await fetch(API_URL);
-    const json = await res.json();
-    if(json.status === "success") {
-      globalEntries = json.data;
-    }
-  } catch(e) {
-    console.error("원격 데이터 수신 실패:", e);
-  }
+function loadEntriesLocal(){
+  const saved = localStorage.getItem(STORAGE_KEY_ENTRIES);
+  globalEntries = saved ? JSON.parse(saved) : {};
+}
+function saveEntriesLocal(){
+  localStorage.setItem(STORAGE_KEY_ENTRIES, JSON.stringify(globalEntries));
 }
 
 function escapeHtml(str){
@@ -379,18 +387,18 @@ function renderCatalog(){
   });
 }
 
-async function refreshTodayView(){
+function refreshTodayView(){
   const dateStr = fmtDate(todayDate);
   document.getElementById('curDateLabel').textContent = fmtDateLabel(todayDate);
   document.getElementById('headerDate').textContent = fmtDateLabel(new Date()) + ' 기준';
-  
+
   currentEntry = globalEntries[dateStr] || {};
   renderSkillCards();
   renderCatalog();
 }
 
-document.getElementById('prevDay').addEventListener('click', async ()=>{ todayDate.setDate(todayDate.getDate()-1); await refreshTodayView(); });
-document.getElementById('nextDay').addEventListener('click', async ()=>{ todayDate.setDate(todayDate.getDate()+1); await refreshTodayView(); });
+document.getElementById('prevDay').addEventListener('click', ()=>{ todayDate.setDate(todayDate.getDate()-1); refreshTodayView(); });
+document.getElementById('nextDay').addEventListener('click', ()=>{ todayDate.setDate(todayDate.getDate()+1); refreshTodayView(); });
 
 document.getElementById('addTabCatalog').addEventListener('click', ()=>{
   document.getElementById('addTabCatalog').classList.add('active');
@@ -416,31 +424,16 @@ document.getElementById('addSkillBtn').addEventListener('click', ()=>{
   renderCatalog();
 });
 
-document.getElementById('saveBtn').addEventListener('click', async ()=>{
+document.getElementById('saveBtn').addEventListener('click', ()=>{
   const dateStr = fmtDate(todayDate);
   const toast = document.getElementById('saveToast');
-  toast.textContent = "구글 시트에 동기화 중...";
-  toast.classList.add('show');
 
-  try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain" },
-      body: JSON.stringify({
-        date: dateStr,
-        entries: currentEntry,
-        skills: skills
-      })
-    });
-    
-    toast.textContent = "구글 시트에 저장 완료!";
-    globalEntries[dateStr] = JSON.parse(JSON.stringify(currentEntry));
-    setTimeout(()=>toast.classList.remove('show'), 2000);
-  } catch(e) {
-    console.error(e);
-    toast.textContent = "저장 실패. 네트워크를 확인하세요.";
-    setTimeout(()=>toast.classList.remove('show'), 3000);
-  }
+  globalEntries[dateStr] = JSON.parse(JSON.stringify(currentEntry));
+  saveEntriesLocal();
+
+  toast.textContent = "저장됐어요";
+  toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'), 2000);
 });
 
 document.getElementById('tabToday').addEventListener('click', ()=>{
@@ -449,15 +442,11 @@ document.getElementById('tabToday').addEventListener('click', ()=>{
   document.getElementById('viewToday').classList.add('active');
   document.getElementById('viewHistory').classList.remove('active');
 });
-document.getElementById('tabHistory').addEventListener('click', async ()=>{
+document.getElementById('tabHistory').addEventListener('click', ()=>{
   document.getElementById('tabHistory').classList.add('active');
   document.getElementById('tabToday').classList.remove('active');
   document.getElementById('viewHistory').classList.add('active');
   document.getElementById('viewToday').classList.remove('active');
-  
-  const trendArea = document.getElementById('trendArea');
-  trendArea.innerHTML = `<div class="loading">구글 데이터 불러오는 중...</div>`;
-  await fetchAllData(); 
   refreshHistoryView();
 });
 
@@ -470,12 +459,12 @@ function refreshHistDateCard(){
   const entry = globalEntries[dateStr] || {};
   const card = document.getElementById('histCard');
   const entries = Object.keys(entry);
-  
+
   if(entries.length === 0){
     card.innerHTML = `<div class="history-empty">이 날짜엔 기록이 없어요</div>`;
     return;
   }
-  
+
   card.innerHTML = entries.map(id => {
     const e = entry[id];
     const skill = skills.find(s=>s.id===id);
@@ -492,14 +481,14 @@ function refreshHistDateCard(){
 function refreshTrend(){
   const trendArea = document.getElementById('trendArea');
   const skillStats = {};
-  
+
   const dates = [];
   for(let i=0; i<14; i++) {
     const d = new Date();
     d.setDate(d.getDate() - i);
     dates.push(fmtDate(d));
   }
-  
+
   dates.forEach(dStr => {
     const entry = globalEntries[dStr] || {};
     Object.keys(entry).forEach(id => {
@@ -511,13 +500,13 @@ function refreshTrend(){
       skillStats[id].count++;
     });
   });
-  
+
   const statIds = Object.keys(skillStats);
   if(statIds.length === 0){
     trendArea.innerHTML = `<div class="history-empty">최근 14일 통계 데이터가 없습니다.</div>`;
     return;
   }
-  
+
   trendArea.innerHTML = statIds.map(id => {
     const skill = skills.find(s=>s.id===id);
     const name = skill ? skill.name : id;
@@ -536,10 +525,43 @@ function refreshHistoryView(){
   refreshHistDateCard();
 }
 
-(async function init(){
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+  const backup = { skills, entries: globalEntries, exportedAt: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `growth_record_backup_${fmtDate(new Date())}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('importBtn').addEventListener('click', ()=>{
+  document.getElementById('importFile').click();
+});
+document.getElementById('importFile').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    try{
+      const data = JSON.parse(ev.target.result);
+      if(data.skills) { skills = data.skills; saveSkillsLocal(); }
+      if(data.entries) { globalEntries = data.entries; saveEntriesLocal(); }
+      refreshTodayView();
+      alert('불러오기 완료');
+    }catch(err){
+      alert('파일을 읽을 수 없어요. 올바른 백업 파일인지 확인하세요.');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+(function init(){
   loadSkillsLocal();
-  await fetchAllData();
-  await refreshTodayView();
+  loadEntriesLocal();
+  refreshTodayView();
 })();
 </script>
 </body>
